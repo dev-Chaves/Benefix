@@ -2,9 +2,12 @@ package com.hackaton.desafio.entity;
 
 import jakarta.persistence.*;
 
+import java.util.Date;
+import java.util.List;
+
 @Entity
-@Table(name = "tb_empresa")
-public class EmpresaEntity {
+@Table(name = "tb_enterprise")
+public class EnterpriseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -16,6 +19,10 @@ public class EmpresaEntity {
     @Column(name = "cnpj", nullable = false, unique = true)
     private String cnpj;
 
-    @Column(name = created_at, nullable = false)
+    @OneToMany(mappedBy = "enterprise", cascade = CascadeType.ALL)
+    private List<UserEntity> users;
+
+    @Column(name = "created_at", nullable = false)
+    private Date createdAt;
 
 }

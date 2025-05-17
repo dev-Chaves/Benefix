@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 
 @Entity
 @Table(name = "tb_benefit")
-public class Beneficio {
+public class BenefitEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -14,7 +14,7 @@ public class Beneficio {
     private String description;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "enterprise_fornecedora", nullable = false)
+    @JoinColumn(name = "supplier_enterprise_id", nullable = false)
     private EnterpriseEntity supplierEnterprise;
 
 }

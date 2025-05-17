@@ -1,4 +1,6 @@
 package com.hackaton.desafio.dto.partnershipDTO;
 
-public record PartnershipDTO() {
+public record PartnershipRequest(
+        Long consumerEnterpriseId
+) {
 }

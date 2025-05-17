@@ -1,6 +1,6 @@
 package com.hackaton.desafio.dto.benefitDTO;
 
-public record BenefityResponse(
+public record BenefitResponse(
         String description,
         String nameSupplierEnterprise,
         String namePartnershipEnterprise

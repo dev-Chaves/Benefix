@@ -1,4 +1,8 @@
 package com.hackaton.desafio.dto.benefitDTO;
 
-public record BenefityRequest() {
+public record BenefityRequest(
+        String description,
+        Long supplierEnterpriseId
+
+) {
 }

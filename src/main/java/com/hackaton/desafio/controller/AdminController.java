@@ -1,6 +1,8 @@
 package com.hackaton.desafio.controller;
 
 import com.hackaton.desafio.dto.benefitDTO.BenefityRequest;
+import com.hackaton.desafio.dto.enterpriseDTO.EnterpriseRequest;
+import com.hackaton.desafio.dto.partnershipDTO.PartnershipRequest;
 import com.hackaton.desafio.dto.userDTO.UserRequest;
 import com.hackaton.desafio.repository.UserRepository;
 import jakarta.validation.Valid;
@@ -28,6 +30,16 @@ public class AdminController {
     public ResponseEntity<?> createBenefit(@RequestBody @Valid BenefityRequest benefityRequest){
         return adminService.createBenefit(benefityRequest);
     }
+
+    public ResponseEntity<?> createEnterprise(@RequestBody @Valid EnterpriseRequest enterprise){
+        return adminService.createEnterprise(enterprise);
+    }
+
+    public ResponseEntity<?> createPartnership(@RequestBody @Valid PartnershipRequest partnership){
+        return adminService.createPartnership(partnership);
+    }
+
+
 
     public ResponseEntity<?> updateBenefit(@RequestBody @Valid BenefityRequest benefityRequest){
         return adminService.updateBenefit(benefityRequest);

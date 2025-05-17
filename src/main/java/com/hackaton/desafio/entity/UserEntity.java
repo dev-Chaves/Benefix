@@ -3,7 +3,7 @@ package com.hackaton.desafio.entity;
 import com.hackaton.desafio.entity.Role.Role;
 import jakarta.persistence.*;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "tb_user")
@@ -28,7 +28,7 @@ public class UserEntity {
     private Role role = Role.USER;
 
     @Column(name = "created_at", nullable = false)
-    private Date createdAt;
+    private LocalDateTime createdAt;
 
 
     public Long getId() {
@@ -71,11 +71,11 @@ public class UserEntity {
         this.role = role;
     }
 
-    public Date getCreatedAt() {
+    public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(Date createdAt) {
+    public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
 }

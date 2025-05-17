@@ -1,7 +1,7 @@
 package com.hackaton.desafio.dto.enterpriseDTO;
 
-public record EnterpriseRequest(
+public record EnterpriseResponse (
         String name,
         String cnpj
-) {
+){
 }

@@ -5,6 +5,7 @@ import com.hackaton.desafio.dto.benefitDTO.BenefitResponse;
 import com.hackaton.desafio.dto.enterpriseDTO.EnterpriseRequest;
 import com.hackaton.desafio.dto.enterpriseDTO.EnterpriseResponse;
 import com.hackaton.desafio.dto.partnershipDTO.PartnershipRequest;
+import com.hackaton.desafio.dto.partnershipDTO.PartnershipResponse;
 import com.hackaton.desafio.dto.userDTO.UserRequest;
 import com.hackaton.desafio.dto.userDTO.UserResponse;
 import com.hackaton.desafio.entity.BenefitEntity;
@@ -75,6 +76,10 @@ public class AdminService {
     @Transactional
     public ResponseEntity<?> createBenefit(BenefitRequest benefityRequest) {
 
+        if(getRole() != Role.ADMIN){
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Access denied: only admins can create benefits");
+        }
+
         EnterpriseEntity enterprise = enterpriseRepository.findById(benefityRequest.supplierEnterpriseId()).orElseThrow(() -> new EntityNotFoundException("Enterprise not found"));
 
         if(benefityRequest.supplierEnterpriseId() == null || benefityRequest.description() == null){
@@ -97,12 +102,15 @@ public class AdminService {
     @Transactional
     public ResponseEntity<?> createEnterprise(EnterpriseRequest enterpriseRequest) {
 
-        if(enterpriseRequest.name().isEmpty() || enterpriseRequest.cnpj().isEmpty()){
+        if (getRole() != Role.ADMIN) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Access denied: only admins can create enterprises");
+        }
+
+        if (enterpriseRequest.name().isEmpty() || enterpriseRequest.cnpj().isEmpty()) {
             return ResponseEntity.badRequest().body("Invalid enterprise data");
         }
 
         EnterpriseEntity enterprise = new EnterpriseEntity();
-
         enterprise.setEnterprise(enterpriseRequest.name());
         enterprise.setCnpj(enterpriseRequest.cnpj());
         enterprise.setCreatedAt(LocalDateTime.now());
@@ -112,38 +120,45 @@ public class AdminService {
         return ResponseEntity.ok(new EnterpriseResponse(enterprise.getEnterprise(), enterprise.getCnpj()));
     }
 
-    public ResponseEntity<?> createPartnership(@Valid PartnershipRequest partnershipRequest) {
 
-        EnterpriseEntity enterpriseSupplier = enterpriseRepository.findById(partnershipRequest.supplierEnterpriseId())
-                .orElseThrow(() -> new EntityNotFoundException("Supplier enterprise not found"));
+    @Transactional
+    public ResponseEntity<?> createPartnership(PartnershipRequest partnershipRequest){
 
-        EnterpriseEntity enterpriseProvider = enterpriseRepository.findById(partnershipRequest.consumerEnterpriseId())
-                .orElseThrow(() -> new EntityNotFoundException("Consumer enterprise not found"));
+        if(getRole() != Role.ADMIN){
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Access denied: only admins can create partnerships");
+        }
 
-        if(partnershipRequest.supplierEnterpriseId() == null || partnershipRequest.consumerEnterpriseId() == null){
+        if(partnershipRequest.consumerEnterpriseId() == null || partnershipRequest.supplierEnterpriseId() == null){
             return ResponseEntity.badRequest().body("Invalid partnership data");
         }
 
-        if(partnershipRepository.existsBySupplierEnterpriseAndConsumerEnterprise(enterpriseSupplier, enterpriseProvider)){
-            return ResponseEntity.badRequest().body("Partnership already exists");
-        }
+        EnterpriseEntity consumerEnterprise = enterpriseRepository.findById(partnershipRequest.consumerEnterpriseId())
+                .orElseThrow(() -> new EntityNotFoundException("Consumer enterprise not found"));
+        EnterpriseEntity supplierEnterprise = enterpriseRepository.findById(partnershipRequest.supplierEnterpriseId())
+                .orElseThrow(() -> new EntityNotFoundException("Supplier enterprise not found"));
 
         PartnershipEntity partnership = new PartnershipEntity();
 
-        return null;
+        partnership.setConsumerEnterprise(consumerEnterprise);
+        partnership.setSupplierEnterprise(supplierEnterprise);
+        partnershipRepository.save(partnership);
+
+        return ResponseEntity.ok(new PartnershipResponse(
+                partnership.getId(),
+                partnership.getConsumerEnterprise().getEnterprise(),
+                partnership.getSupplierEnterprise().getEnterprise()
+        ));
+
     }
 
-    private final Role GetRole(){
+    private static Role getRole() {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        UserEntity user;
 
-        if (principal instanceof UserEntity) {
-            user = (UserEntity) principal;
-        } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        if (principal instanceof UserEntity user) {
+            return user.getRole();
         }
 
-        return user.getRole();
+        throw new RuntimeException("Usuário não autenticado");
     }
 
 }

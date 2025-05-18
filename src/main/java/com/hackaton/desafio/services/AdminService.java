@@ -94,6 +94,7 @@ public class AdminService {
         benefitRepository.save(benefit);
 
         return ResponseEntity.ok(new BenefitResponse(
+                benefit.getId(),
                 benefit.getDescription(),
                 benefit.getSupplierEnterprise().getEnterprise()
         ));

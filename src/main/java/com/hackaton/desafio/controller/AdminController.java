@@ -41,9 +41,4 @@ public class AdminController {
     }
 
 
-
-    public ResponseEntity<?> updateBenefit(@RequestBody @Valid BenefitRequest benefitRequest){
-        return adminService.updateBenefit(benefitRequest);
-    }
-
 }

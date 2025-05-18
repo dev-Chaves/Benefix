@@ -1,6 +1,7 @@
 package com.hackaton.desafio.controller;
 
 import com.hackaton.desafio.repository.BenefitRepository;
+import com.hackaton.desafio.services.BenefitService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;

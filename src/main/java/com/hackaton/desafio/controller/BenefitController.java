@@ -18,8 +18,8 @@ public class BenefitController {
         this.benefitService = benefitService;
     }
 
-    @GetMapping("benefits")
-    public ResponseEntity<?> getBenefits() {
+    @GetMapping("benefitsByEnterprise")
+    public ResponseEntity<?> getBenefitsByEnterprise() {
         return benefitService.getBenefits());
     }
 

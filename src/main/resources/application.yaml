@@ -10,12 +10,18 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
+    defer-datasource-initialization: true
     show-sql: true
     properties:
       hibernate:
         format_sql: true
+        generate_statistics: true
     database-platform: org.hibernate.dialect.PostgreSQLDialect
+
+  sql:
+    init:
+      mode: always
 
   jackson:
     time-zone: America/Sao_Paulo
@@ -26,3 +32,9 @@ server:
 
 jwt:
   secret: ${API_SECURITY_TOKEN_SECRET}
+
+logging:
+  level:
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+

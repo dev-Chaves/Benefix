@@ -1,10 +1,11 @@
 package com.hackaton.desafio.controller;
 
-import com.hackaton.desafio.dto.benefitDTO.BenefityRequest;
+import com.hackaton.desafio.dto.benefitDTO.BenefitRequest;
 import com.hackaton.desafio.dto.enterpriseDTO.EnterpriseRequest;
 import com.hackaton.desafio.dto.partnershipDTO.PartnershipRequest;
 import com.hackaton.desafio.dto.userDTO.UserRequest;
 import com.hackaton.desafio.repository.UserRepository;
+import com.hackaton.desafio.services.AdminService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -27,8 +28,8 @@ public class AdminController {
         return adminService.createUser(userRequest);
     }
 
-    public ResponseEntity<?> createBenefit(@RequestBody @Valid BenefityRequest benefityRequest){
-        return adminService.createBenefit(benefityRequest);
+    public ResponseEntity<?> createBenefit(@RequestBody @Valid BenefitRequest benefitRequest){
+        return adminService.createBenefit(benefitRequest);
     }
 
     public ResponseEntity<?> createEnterprise(@RequestBody @Valid EnterpriseRequest enterprise){
@@ -39,10 +40,5 @@ public class AdminController {
         return adminService.createPartnership(partnership);
     }
 
-
-
-    public ResponseEntity<?> updateBenefit(@RequestBody @Valid BenefityRequest benefityRequest){
-        return adminService.updateBenefit(benefityRequest);
-    }
 
 }

@@ -1,5 +1,6 @@
 package com.hackaton.desafio.config;
 
+import com.hackaton.desafio.entity.UserEntity;
 import com.hackaton.desafio.repository.UserRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -20,13 +21,12 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
-        if(username == null || username.isEmpty()){
+        if (username == null || username.isEmpty()) {
             throw new UsernameNotFoundException("Username cannot be null or empty");
         }
-        var user = userRepository.findByName(username);
-        if(user == null){
-            throw new UsernameNotFoundException("User not found");
-        }
+
+        UserEntity user = userRepository.findByName(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
         return new org.springframework.security.core.userdetails.User(
                 user.getName(),
@@ -34,4 +34,5 @@ public class CustomUserDetailsService implements UserDetailsService {
                 new ArrayList<>()
         );
     }
+
 }

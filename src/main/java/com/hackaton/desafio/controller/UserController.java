@@ -2,6 +2,7 @@ package com.hackaton.desafio.controller;
 
 import com.hackaton.desafio.dto.userDTO.UserRequest;
 import com.hackaton.desafio.repository.UserRepository;
+import com.hackaton.desafio.services.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;

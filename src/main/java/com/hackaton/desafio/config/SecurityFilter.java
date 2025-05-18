@@ -9,6 +9,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -32,7 +33,7 @@ public class SecurityFilter extends OncePerRequestFilter {
             var login = tokenService.isTokenValid(token);
 
             if(login != null){
-                UserEntity user = userRepository.findByName(login);
+                UserEntity user = userRepository.findByName(login).orElseThrow(()-> new UsernameNotFoundException("User not found"));
                 var authorities = Collections.singleton(new SimpleGrantedAuthority(("ROLE_USER")));
                 var authentication = new UsernamePasswordAuthenticationToken(user, null, authorities);
                 SecurityContextHolder.getContext().setAuthentication(authentication);

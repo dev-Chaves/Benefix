@@ -21,7 +21,7 @@ public class BenefitController {
 
     @GetMapping("benefitsByEnterprise")
     public ResponseEntity<?> getBenefitsByEnterprise() {
-        return benefitService.getBenefits());
+        return benefitService.getBenefitsByEnterprise();
     }
 
 }

@@ -38,17 +38,6 @@ services:
     networks:
       - backend
 
-  nginx:
-    image: nginx:latest
-    ports:
-      - "80:80"
-    volumes:
-      - ./nginx.conf:/etc/nginx/conf.d/default.conf
-    depends_on:
-      - api
-    networks:
-      - backend
-
 volumes:
   pgdata:
 networks:

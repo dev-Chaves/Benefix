@@ -2,7 +2,7 @@ services:
   api:
     build: .
     ports:
-      - 8080:8080
+      - "8080:8080"
     depends_on:
       - database
     environment:
@@ -12,8 +12,6 @@ services:
       API_SECURITY_TOKEN_SECRET: ${API_SECURITY_TOKEN_SECRET}
     networks:
       - backend
-    deploy:
-      replicas: 2
     restart:
       on-failure
     volumes:
@@ -22,7 +20,7 @@ services:
   database:
     image: postgres:latest
     ports:
-      - 5432:5432
+      - "5432:5432"
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}

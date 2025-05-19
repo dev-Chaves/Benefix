@@ -57,9 +57,7 @@ public class UserService {
 
     public ResponseEntity<?> register (RegisterDTO userRequest) {
 
-        StringBuilder sb = new StringBuilder();
-
-        sb.append("token");
+        String sb = "token";
 
         if(userRequest == null
                 || userRequest.name() == null || userRequest.name().isBlank()

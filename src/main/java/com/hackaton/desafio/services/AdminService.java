@@ -1,12 +1,12 @@
 package com.hackaton.desafio.services;
 
+import com.hackaton.desafio.dto.authDTO.CreateUserRequest;
 import com.hackaton.desafio.dto.benefitDTO.BenefitRequest;
 import com.hackaton.desafio.dto.benefitDTO.BenefitResponse;
 import com.hackaton.desafio.dto.enterpriseDTO.EnterpriseRequest;
 import com.hackaton.desafio.dto.enterpriseDTO.EnterpriseResponse;
 import com.hackaton.desafio.dto.partnershipDTO.PartnershipRequest;
 import com.hackaton.desafio.dto.partnershipDTO.PartnershipResponse;
-import com.hackaton.desafio.dto.userDTO.UserRequest;
 import com.hackaton.desafio.dto.userDTO.UserResponse;
 import com.hackaton.desafio.entity.BenefitEntity;
 import com.hackaton.desafio.entity.EnterpriseEntity;
@@ -19,7 +19,6 @@ import com.hackaton.desafio.repository.PartnershipRepository;
 import com.hackaton.desafio.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
-import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -46,7 +45,7 @@ public class AdminService {
     }
 
     @Transactional
-    public ResponseEntity<?> createUser(UserRequest userRequest) {
+    public ResponseEntity<?> createUser(CreateUserRequest userRequest) {
 
         EnterpriseEntity enterprise = enterpriseRepository.findById(userRequest.enterprise())
                 .orElseThrow(() -> new EntityNotFoundException("Enterprise not found"));

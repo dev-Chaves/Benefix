@@ -18,7 +18,7 @@ public class TokenService {
 
     private final long expirationTime = 86400000;
 
-    private String generateToken(UserEntity user){
+    public String generateToken(UserEntity user){
         try {
 
             if(user == null || user.getName().isEmpty()){

@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("teste/benefits")
+@RequestMapping("/benefits")
 public class BenefitController {
 
     private final BenefitRepository benefitsRepository;

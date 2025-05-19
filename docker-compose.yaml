@@ -1,7 +1,6 @@
 services:
   api:
     build: .
-    container_name: desafio-hackaton
     ports:
       - 8080:8080
     depends_on:
@@ -11,17 +10,17 @@ services:
       SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME}
       SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
       API_SECURITY_TOKEN_SECRET: ${API_SECURITY_TOKEN_SECRET}
-
-
     networks:
       - backend
+    deploy:
+      replicas: 2
     restart:
       on-failure
     volumes:
       - ./logs:/app/logs
+
   database:
     image: postgres:latest
-    container_name: desafio-hackaton-db
     ports:
       - 5432:5432
     environment:
@@ -36,7 +35,17 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    networks:
+      - backend
 
+  nginx:
+    image: nginx:latest
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - api
     networks:
       - backend
 

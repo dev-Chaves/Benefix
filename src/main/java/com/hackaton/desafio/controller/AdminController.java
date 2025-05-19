@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("teste/admin")
+@RequestMapping("/admin")
 public class AdminController {
 
     private final UserRepository repository;

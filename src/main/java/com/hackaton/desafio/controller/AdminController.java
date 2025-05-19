@@ -1,9 +1,9 @@
 package com.hackaton.desafio.controller;
 
+import com.hackaton.desafio.dto.authDTO.CreateUserRequest;
 import com.hackaton.desafio.dto.benefitDTO.BenefitRequest;
 import com.hackaton.desafio.dto.enterpriseDTO.EnterpriseRequest;
 import com.hackaton.desafio.dto.partnershipDTO.PartnershipRequest;
-import com.hackaton.desafio.dto.userDTO.UserRequest;
 import com.hackaton.desafio.repository.UserRepository;
 import com.hackaton.desafio.services.AdminService;
 import jakarta.validation.Valid;
@@ -26,7 +26,7 @@ public class AdminController {
     }
 
     @PostMapping("/user")
-    public ResponseEntity<?> createUser(@RequestBody @Valid UserRequest userRequest){
+    public ResponseEntity<?> createUser(@RequestBody @Valid CreateUserRequest userRequest){
         return adminService.createUser(userRequest);
     }
 

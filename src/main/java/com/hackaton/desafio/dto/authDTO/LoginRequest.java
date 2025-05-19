@@ -1,5 +1,5 @@
 package com.hackaton.desafio.dto.authDTO;
 
-public record AuthDTO (String name, String password) {
+public record LoginRequest(String name, String password) {
 
 }

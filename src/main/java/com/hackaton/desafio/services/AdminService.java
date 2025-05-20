@@ -73,21 +73,21 @@ public class AdminService {
     }
 
     @Transactional
-    public ResponseEntity<?> createBenefit(BenefitRequest benefityRequest) {
+    public ResponseEntity<?> createBenefit(BenefitRequest benefitRequest) {
 
         if(getRole() != Role.ADMIN){
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Access denied: only admins can create benefits");
         }
 
-        EnterpriseEntity enterprise = enterpriseRepository.findById(benefityRequest.supplierEnterpriseId()).orElseThrow(() -> new EntityNotFoundException("Enterprise not found"));
-
-        if(benefityRequest.supplierEnterpriseId() == null || benefityRequest.description() == null){
+        if(benefitRequest.supplierEnterpriseId() == null || benefitRequest.description() == null){
             return ResponseEntity.badRequest().body("Invalid benefit data");
         }
 
+        EnterpriseEntity enterprise = enterpriseRepository.findById(benefitRequest.supplierEnterpriseId()).orElseThrow(() -> new EntityNotFoundException("Enterprise not found"));
+
         BenefitEntity benefit = new BenefitEntity();
 
-        benefit.setDescription(benefityRequest.description());
+        benefit.setDescription(benefitRequest.description());
         benefit.setSupplierEnterprise(enterprise);
 
         benefitRepository.save(benefit);
@@ -117,7 +117,7 @@ public class AdminService {
 
         enterpriseRepository.save(enterprise);
 
-        return ResponseEntity.ok(new EnterpriseResponse(enterprise.getEnterprise(), enterprise.getCnpj()));
+        return ResponseEntity.ok(new EnterpriseResponse(enterprise.getId(), enterprise.getEnterprise(), enterprise.getCnpj()));
     }
 
 

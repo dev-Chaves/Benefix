@@ -7,6 +7,7 @@ import com.hackaton.desafio.entity.UserEntity;
 import com.hackaton.desafio.repository.BenefitRepository;
 import com.hackaton.desafio.repository.EnterpriseRepository;
 import com.hackaton.desafio.repository.UserRepository;
+import com.hackaton.desafio.util.AuthUtil;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -22,22 +23,19 @@ public class BenefitService {
     private final BenefitRepository benefitRepository;
     private final UserRepository userRepository;
     private final EnterpriseRepository enterpriseRepository;
+    private final AuthUtil authUtil;
 
-    public BenefitService(BenefitRepository benefitRepository, UserRepository userRepository, EnterpriseRepository enterpriseRepository) {
+    public BenefitService(BenefitRepository benefitRepository, UserRepository userRepository, EnterpriseRepository enterpriseRepository, AuthUtil authUtil) {
         this.benefitRepository = benefitRepository;
         this.userRepository = userRepository;
         this.enterpriseRepository = enterpriseRepository;
+        this.authUtil = authUtil;
     }
 
     public ResponseEntity<?> getBenefitsByEnterprise() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        if (authentication == null || !(authentication.getPrincipal() instanceof String username)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not authenticated");
-        }
-
-        UserEntity user = userRepository.findByName(username).orElseThrow(()->
-                new UsernameNotFoundException("User not found"));
+        UserEntity user = AuthUtil.getAuthenticatedUser()
+                .orElseThrow(() -> new RuntimeException("User not authenticated"));
 
         EnterpriseEntity enterprise = user.getEnterprise();
 

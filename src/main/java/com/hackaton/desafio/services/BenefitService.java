@@ -3,9 +3,11 @@ package com.hackaton.desafio.services;
 import com.hackaton.desafio.dto.benefitDTO.BenefitResponse;
 import com.hackaton.desafio.entity.BenefitEntity;
 import com.hackaton.desafio.entity.EnterpriseEntity;
+import com.hackaton.desafio.entity.PartnershipEntity;
 import com.hackaton.desafio.entity.UserEntity;
 import com.hackaton.desafio.repository.BenefitRepository;
 import com.hackaton.desafio.repository.EnterpriseRepository;
+import com.hackaton.desafio.repository.PartnershipRepository;
 import com.hackaton.desafio.repository.UserRepository;
 import com.hackaton.desafio.util.AuthUtil;
 import org.springframework.http.HttpStatus;
@@ -24,12 +26,14 @@ public class BenefitService {
     private final UserRepository userRepository;
     private final EnterpriseRepository enterpriseRepository;
     private final AuthUtil authUtil;
+    private final PartnershipRepository partnershipRepository;
 
-    public BenefitService(BenefitRepository benefitRepository, UserRepository userRepository, EnterpriseRepository enterpriseRepository, AuthUtil authUtil) {
+    public BenefitService(BenefitRepository benefitRepository, UserRepository userRepository, EnterpriseRepository enterpriseRepository, AuthUtil authUtil, PartnershipRepository partnershipRepository) {
         this.benefitRepository = benefitRepository;
         this.userRepository = userRepository;
         this.enterpriseRepository = enterpriseRepository;
         this.authUtil = authUtil;
+        this.partnershipRepository = partnershipRepository;
     }
 
     public ResponseEntity<?> getBenefitsByEnterprise() {
@@ -46,6 +50,19 @@ public class BenefitService {
                 .toList();
 
         return ResponseEntity.ok(response);
+    }
+
+    public ResponseEntity<?> getBenefitOfPartneship(){
+
+        UserEntity user = AuthUtil.getAuthenticatedUser()
+                .orElseThrow(() -> new RuntimeException("User not authenticated"));
+
+         EnterpriseEntity userEnterprise = enterpriseRepository.findById(user.getEnterprise().getId()).orElseThrow(()-> new RuntimeException("Enterprise not found"));
+
+//         terminar esse método
+         return null;
+
+
     }
 
 }

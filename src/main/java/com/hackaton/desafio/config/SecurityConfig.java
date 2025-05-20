@@ -14,12 +14,12 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
-public class SecuirtyConfig {
+public class SecurityConfig {
 
     private final CustomUserDetailsService customUserDetailsService;
     private final SecurityFilter securityFilter;
 
-    public SecuirtyConfig(CustomUserDetailsService customUserDetailsService, SecurityFilter securityFilter) {
+    public SecurityConfig(CustomUserDetailsService customUserDetailsService, SecurityFilter securityFilter) {
         this.customUserDetailsService = customUserDetailsService;
         this.securityFilter = securityFilter;
     }
@@ -30,7 +30,7 @@ public class SecuirtyConfig {
                 .csrf(csrf->csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/**").permitAll()
+                        .requestMatchers("/user/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class);

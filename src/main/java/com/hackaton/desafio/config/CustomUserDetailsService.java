@@ -25,14 +25,7 @@ public class CustomUserDetailsService implements UserDetailsService {
             throw new UsernameNotFoundException("Username cannot be null or empty");
         }
 
-        UserEntity user = userRepository.findByName(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-
-        return new org.springframework.security.core.userdetails.User(
-                user.getName(),
-                user.getPassword(),
-                new ArrayList<>()
-        );
+        return userRepository.findByName(username).orElseThrow(()-> new UsernameNotFoundException("User not found"));
     }
 
 }

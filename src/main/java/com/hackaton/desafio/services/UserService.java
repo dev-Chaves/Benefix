@@ -60,7 +60,7 @@ public class UserService {
         } else if (user.getPassword().equals(userRequest.password()) ) {
             token = this.tokenService.generateToken(user);
         } else {
-            return ResponseEntity.status(401).body("Invalid password");
+            return ResponseEntity.status(401).body("Invalid credentials");
         }
 
         LoginResponse response = new LoginResponse(user.getName(), token);

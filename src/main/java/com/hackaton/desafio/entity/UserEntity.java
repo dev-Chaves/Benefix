@@ -40,6 +40,17 @@ public class UserEntity implements UserDetails {
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
+    public UserEntity() {
+    }
+
+    public UserEntity(String name, String password, EnterpriseEntity enterprise) {
+        this.name = name;
+        this.password = password;
+        this.enterprise = enterprise;
+        this.createdAt = LocalDateTime.now();
+        this.role = Role.USER;
+    }
+
 
     public Long getId() {
         return id;

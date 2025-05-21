@@ -3,6 +3,7 @@ package com.hackaton.desafio.services;
 import com.hackaton.desafio.dto.benefitDTO.BenefitResponse;
 import com.hackaton.desafio.entity.BenefitEntity;
 import com.hackaton.desafio.entity.EnterpriseEntity;
+import com.hackaton.desafio.entity.Enum.BenefitCategory;
 import com.hackaton.desafio.entity.PartnershipEntity;
 import com.hackaton.desafio.entity.UserEntity;
 import com.hackaton.desafio.repository.BenefitRepository;
@@ -14,8 +15,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 import java.util.Objects;
@@ -47,7 +50,7 @@ public class BenefitService {
         List<BenefitEntity> benefits = benefitRepository.findByEnterpriseId(user.getEnterprise().getId());
 
         List<BenefitResponse> response = benefits.stream()
-                .map(b -> new BenefitResponse(b.getId(), b.getDescription(), b.getSupplierEnterprise().getEnterprise()))
+                .map(b -> new BenefitResponse(b.getId(), b.getDescription(), b.getSupplierEnterprise().getEnterprise(), b.getCategory()))
                 .toList();
 
         return ResponseEntity.ok(response);
@@ -72,11 +75,35 @@ public class BenefitService {
 
          List<BenefitEntity> benefits = benefitRepository.findBySupplierEnterprise_IdIn(partnershipIds);
 
-         List<BenefitResponse> responses = benefits.stream().map( b -> new BenefitResponse(b.getId(),b.getDescription(),b.getSupplierEnterprise().getEnterprise())).toList();
+         List<BenefitResponse> responses = benefits.stream().map( b -> new BenefitResponse(b.getId(),b.getDescription(),b.getSupplierEnterprise().getEnterprise(), b.getCategory())).toList();
 
          return ResponseEntity.ok(responses);
 
 
+    }
+
+    public ResponseEntity<List<BenefitResponse>> getBenefitsByCategory(String category) {
+        try {
+
+            BenefitCategory cat = BenefitCategory.valueOf(category.toUpperCase());
+
+            UserEntity user = AuthUtil.getAuthenticatedUser().orElseThrow(()-> new UsernameNotFoundException("User not found"));
+
+            List<BenefitEntity> benefits = benefitRepository.findByCategoryAndUser(cat, user);
+
+            List<BenefitResponse> responses = benefits.stream()
+                    .map(b -> new BenefitResponse(
+                            b.getId(),
+                            b.getDescription(),
+                            b.getSupplierEnterprise().getEnterprise(),
+                            b.getCategory()
+                    )).toList();
+
+            return ResponseEntity.ok(responses);
+
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(List.of());
+        }
     }
 
 }

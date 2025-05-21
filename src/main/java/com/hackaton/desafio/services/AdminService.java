@@ -79,7 +79,7 @@ public class AdminService {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Access denied: only admins can create benefits");
         }
 
-        if(benefitRequest.supplierEnterpriseId() == null || benefitRequest.description() == null){
+        if(benefitRequest.supplierEnterpriseId() == null || benefitRequest.description() == null || benefitRequest.category() == null){
             return ResponseEntity.badRequest().body("Invalid benefit data");
         }
 
@@ -89,13 +89,16 @@ public class AdminService {
 
         benefit.setDescription(benefitRequest.description());
         benefit.setSupplierEnterprise(enterprise);
+        benefit.setCategory(benefitRequest.category());
+        benefit.setCreatedAt(LocalDateTime.now());
 
         benefitRepository.save(benefit);
 
         return ResponseEntity.ok(new BenefitResponse(
                 benefit.getId(),
                 benefit.getDescription(),
-                benefit.getSupplierEnterprise().getEnterprise()
+                benefit.getSupplierEnterprise().getEnterprise(),
+                benefit.getCategory()
         ));
     }
 

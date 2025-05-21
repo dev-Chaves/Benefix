@@ -18,6 +18,21 @@ public class PartnershipEntity {
     @JoinColumn(name = "supplier_enterprise_id", nullable = false)
     private EnterpriseEntity supplierEnterprise;
 
+    public PartnershipEntity() {
+
+    }
+
+    public PartnershipEntity(EnterpriseEntity empresa1, EnterpriseEntity empresa2) {
+        if (empresa1.getId() < empresa2.getId()) {
+            this.consumerEnterprise = empresa1;
+            this.supplierEnterprise = empresa2;
+        } else {
+            this.consumerEnterprise = empresa2;
+            this.supplierEnterprise = empresa1;
+        }
+    }
+
+
     public Long getId() {
         return id;
     }

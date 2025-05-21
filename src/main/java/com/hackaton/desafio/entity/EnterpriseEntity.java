@@ -27,6 +27,15 @@ public class EnterpriseEntity {
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
+    public EnterpriseEntity() {
+    }
+
+    public EnterpriseEntity(String empresaA, String number, LocalDateTime now) {
+        this.enterprise = empresaA;
+        this.cnpj = number;
+        this.createdAt = LocalDateTime.now();
+    }
+
     public Long getId() {
         return id;
     }

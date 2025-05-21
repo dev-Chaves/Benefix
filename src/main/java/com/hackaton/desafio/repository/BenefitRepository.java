@@ -2,6 +2,8 @@ package com.hackaton.desafio.repository;
 
 import com.hackaton.desafio.entity.BenefitEntity;
 import com.hackaton.desafio.entity.EnterpriseEntity;
+import com.hackaton.desafio.entity.Enum.BenefitCategory;
+import com.hackaton.desafio.entity.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -16,5 +18,10 @@ public interface BenefitRepository extends JpaRepository<BenefitEntity, Long> {
     List<BenefitEntity> findByEnterpriseId(@Param("enterpriseId") Long enterpriseId);
 
     List<BenefitEntity> findBySupplierEnterprise_IdIn(List<Long> enterpriseIds);
+
+    List<BenefitEntity> findByCategory(BenefitCategory category);
+
+    List<BenefitEntity> findByCategoryAndUser(BenefitCategory category, UserEntity user);
+
 
 }

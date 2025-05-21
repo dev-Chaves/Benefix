@@ -1,4 +1,11 @@
 package com.hackaton.desafio.dto.IA;
 
-public record DoubtResponse() {
+public record DoubtResponse(
+
+        String doubt,
+        String user,
+        Boolean answered
+
+
+) {
 }

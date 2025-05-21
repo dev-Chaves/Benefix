@@ -17,14 +17,9 @@ import java.util.List;
 @RequestMapping("/benefits")
 public class BenefitController {
 
-    private final BenefitRepository benefitsRepository;
     private final BenefitService benefitService;
-    private final BenefitRepository benefitRepository;
-
-    public BenefitController(BenefitRepository benefitRepository, BenefitService benefitService, BenefitRepository benefitRepository1) {
-        this.benefitsRepository = benefitRepository;
+    public BenefitController( BenefitService benefitService) {
         this.benefitService = benefitService;
-        this.benefitRepository = benefitRepository1;
     }
 
     @GetMapping("benefits-by-enterprise")

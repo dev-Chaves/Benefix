@@ -89,7 +89,27 @@ public class BenefitService {
 
             UserEntity user = AuthUtil.getAuthenticatedUser().orElseThrow(()-> new UsernameNotFoundException("User not found"));
 
-            List<BenefitEntity> benefits = benefitRepository.findByCategoryAndSupplierEnterprise_User(cat, user);
+            EnterpriseEntity enterprise = user.getEnterprise();
+
+            var partnerships = partnershipRepository.findByEnterpriseId(enterprise.getId());
+
+            List<EnterpriseEntity> partnerEnterprises = partnerships.stream()
+                    .map(partnership -> {
+                        if (Objects.equals(partnership.getConsumerEnterprise().getId(), enterprise.getId())) {
+                            return partnership.getSupplierEnterprise();
+                        } else {
+                            return partnership.getConsumerEnterprise();
+                        }
+                    })
+                    .distinct()
+                    .toList();
+
+
+
+            List<BenefitEntity> benefits = benefitRepository.findByCategoryAndSupplierEnterpriseIn(cat, partnerEnterprises);
+
+
+            System.out.println("benefits: " + benefits);
 
             List<BenefitResponse> responses = benefits.stream()
                     .map(b -> new BenefitResponse(

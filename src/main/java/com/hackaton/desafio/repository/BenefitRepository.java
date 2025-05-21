@@ -21,6 +21,9 @@ public interface BenefitRepository extends JpaRepository<BenefitEntity, Long> {
 
     List<BenefitEntity> findByCategory(BenefitCategory category);
 
-    List<BenefitEntity> findByCategoryAndSupplierEnterprise_User(BenefitCategory category, UserEntity user);
+    List<BenefitEntity> findByCategoryAndSupplierEnterprise(BenefitCategory category, EnterpriseEntity supplierEnterprise);
+
+    List<BenefitEntity> findByCategoryAndSupplierEnterpriseIn(BenefitCategory category, List<EnterpriseEntity> enterprises);
+
 
 }

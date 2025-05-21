@@ -89,7 +89,7 @@ public class BenefitService {
 
             UserEntity user = AuthUtil.getAuthenticatedUser().orElseThrow(()-> new UsernameNotFoundException("User not found"));
 
-            List<BenefitEntity> benefits = benefitRepository.findByCategoryAndUser(cat, user);
+            List<BenefitEntity> benefits = benefitRepository.findByCategoryAndSupplierEnterprise_User(cat, user);
 
             List<BenefitResponse> responses = benefits.stream()
                     .map(b -> new BenefitResponse(

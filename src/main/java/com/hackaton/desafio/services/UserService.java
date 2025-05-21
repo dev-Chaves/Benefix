@@ -1,19 +1,29 @@
 package com.hackaton.desafio.services;
 
 import com.hackaton.desafio.config.TokenService;
+import com.hackaton.desafio.dto.IA.DoubtRequest;
+import com.hackaton.desafio.dto.IA.DoubtResponse;
 import com.hackaton.desafio.dto.authDTO.LoginRequest;
 import com.hackaton.desafio.dto.authDTO.RegisterResponse;
 import com.hackaton.desafio.dto.authDTO.LoginResponse;
 import com.hackaton.desafio.dto.authDTO.RegisterDTO;
 import com.hackaton.desafio.entity.EnterpriseEntity;
+import com.hackaton.desafio.entity.IA.DoubtEntity;
 import com.hackaton.desafio.entity.Role.Role;
 import com.hackaton.desafio.entity.UserEntity;
+import com.hackaton.desafio.repository.DoubtRepository;
 import com.hackaton.desafio.repository.EnterpriseRepository;
 import com.hackaton.desafio.repository.UserRepository;
+import com.hackaton.desafio.util.AuthUtil;
+import org.springframework.cglib.core.Local;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Service
@@ -23,13 +33,16 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final TokenService tokenService;
     private final EnterpriseRepository enterpriseRepository;
+    private final DoubtRepository doubtRepository;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, TokenService tokenService, EnterpriseRepository enterpriseRepository) {
+
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, TokenService tokenService, EnterpriseRepository enterpriseRepository, DoubtRepository doubtRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.tokenService = tokenService;
 
         this.enterpriseRepository = enterpriseRepository;
+        this.doubtRepository = doubtRepository;
     }
 
     public ResponseEntity<?> login(LoginRequest userRequest) {
@@ -87,5 +100,25 @@ public class UserService {
 
         return ResponseEntity.status(201).body(response);
     }
+
+    public ResponseEntity<DoubtResponse> createDoubt(DoubtRequest doubtRequest){
+
+        UserEntity user = AuthUtil.getAuthenticatedUser().orElseThrow(()-> new RuntimeException("User not authenticated"));
+
+        DoubtEntity doubt = new DoubtEntity();
+
+        doubt.setQuestion(doubtRequest.question());
+        doubt.setAnswered(false);
+        doubt.setCreatedAt(LocalDateTime.now());
+        doubt.setUser(user);
+
+        DoubtResponse response = new DoubtResponse(doubt.getQuestion(), doubt.getUser().getName(), doubt.getAnswered());
+
+        doubtRepository.save(doubt);
+
+        return ResponseEntity.ok().body(response);
+
+    }
+
 
 }

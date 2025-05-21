@@ -19,9 +19,14 @@ public class BenefitController {
         this.benefitService = benefitService;
     }
 
-    @GetMapping("benefitsByEnterprise")
+    @GetMapping("benefits-by-enterprise")
     public ResponseEntity<?> getBenefitsByEnterprise() {
         return benefitService.getBenefitsByEnterprise();
+    }
+
+    @GetMapping("user-benefits")
+    public ResponseEntity<?> getBenefitOfPartneship() {
+        return benefitService.getBenefitOfPartneship();
     }
 
 }

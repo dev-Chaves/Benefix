@@ -139,6 +139,17 @@ public class AdminService {
 
         PartnershipEntity partnership = new PartnershipEntity();
 
+        Long id1 = consumerEnterprise.getId();
+        Long id2 = supplierEnterprise.getId();
+
+        if(id1.equals(id2)){
+            return ResponseEntity.badRequest().body("Consumer and supplier enterprises cannot be the same");
+        }
+
+        if(partnershipRepository.existsBySupplierEnterpriseAndConsumerEnterprise(consumerEnterprise, supplierEnterprise)){
+            return ResponseEntity.badRequest().body("Partnership already exists");
+        }
+
         partnership.setConsumerEnterprise(consumerEnterprise);
         partnership.setSupplierEnterprise(supplierEnterprise);
         partnershipRepository.save(partnership);

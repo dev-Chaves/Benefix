@@ -1,5 +1,6 @@
 package com.hackaton.desafio.controller;
 
+import com.hackaton.desafio.dto.benefitDTO.BenefitResponse;
 import com.hackaton.desafio.dto.enterpriseDTO.EnterpriseResponse;
 import com.hackaton.desafio.entity.BenefitEntity;
 import com.hackaton.desafio.entity.EnterpriseEntity;
@@ -31,10 +32,7 @@ public class TesteController {
     }
 
     @GetMapping("benefit")
-    private List<BenefitEntity> benefitEntities(){
-
-
-
-        return benefitRepository.findAll();
+    private List<BenefitResponse> benefitEntities(){
+        return benefitRepository.findAll().stream().map(benefit -> new BenefitResponse(benefit.getId(), benefit.getDescription(), benefit.getSupplierEnterprise().getEnterprise())).toList();
     }
 }

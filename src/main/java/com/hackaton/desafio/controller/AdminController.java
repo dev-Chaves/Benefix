@@ -26,22 +26,22 @@ public class AdminController {
     }
 
     @PostMapping("/user")
-    public ResponseEntity<?> createUser(@RequestBody @Valid CreateUserRequest userRequest){
+    public ResponseEntity<?> createUser(@Valid @RequestBody CreateUserRequest userRequest){
         return adminService.createUser(userRequest);
     }
 
     @PostMapping("/benefit")
-    public ResponseEntity<?> createBenefit(@RequestBody @Valid BenefitRequest benefitRequest){
+    public ResponseEntity<?> createBenefit(@Valid @RequestBody BenefitRequest benefitRequest){
         return adminService.createBenefit(benefitRequest);
     }
 
     @PostMapping("/enterprise")
-    public ResponseEntity<?> createEnterprise(@RequestBody @Valid EnterpriseRequest enterprise){
+    public ResponseEntity<?> createEnterprise(@Valid @RequestBody EnterpriseRequest enterprise){
         return adminService.createEnterprise(enterprise);
     }
 
     @PostMapping("/partnership")
-    public ResponseEntity<?> createPartnership(@RequestBody @Valid PartnershipRequest partnership){
+    public ResponseEntity<?> createPartnership(@Valid @RequestBody PartnershipRequest partnership){
         return adminService.createPartnership(partnership);
     }
 

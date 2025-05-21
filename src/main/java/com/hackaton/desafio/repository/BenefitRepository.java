@@ -15,5 +15,6 @@ public interface BenefitRepository extends JpaRepository<BenefitEntity, Long> {
     @Query("SELECT b FROM BenefitEntity b WHERE b.supplierEnterprise.id = :enterpriseId")
     List<BenefitEntity> findByEnterpriseId(@Param("enterpriseId") Long enterpriseId);
 
+    List<BenefitEntity> findBySupplierEnterprise_IdIn(List<Long> enterpriseIds);
 
 }

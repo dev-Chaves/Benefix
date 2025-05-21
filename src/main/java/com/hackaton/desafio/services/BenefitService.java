@@ -18,6 +18,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class BenefitService {
@@ -59,8 +60,21 @@ public class BenefitService {
 
          EnterpriseEntity userEnterprise = enterpriseRepository.findById(user.getEnterprise().getId()).orElseThrow(()-> new RuntimeException("Enterprise not found"));
 
-//         terminar esse método
-         return null;
+        List<PartnershipEntity> partnerships = partnershipRepository.findByEnterpriseId(user.getEnterprise().getId());
+
+        List<Long> partnershipIds = partnerships.stream().map(p ->{
+             if (Objects.equals(p.getConsumerEnterprise().getId(), user.getEnterprise().getId())){
+                 return p.getSupplierEnterprise().getId();
+             }else {
+                 return p.getConsumerEnterprise().getId();
+             }
+         }).distinct().toList();
+
+         List<BenefitEntity> benefits = benefitRepository.findBySupplierEnterprise_IdIn(partnershipIds);
+
+         List<BenefitResponse> responses = benefits.stream().map( b -> new BenefitResponse(b.getId(),b.getDescription(),b.getSupplierEnterprise().getEnterprise())).toList();
+
+         return ResponseEntity.ok(responses);
 
 
     }

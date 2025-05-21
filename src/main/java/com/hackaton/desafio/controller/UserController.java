@@ -4,6 +4,7 @@ import com.hackaton.desafio.dto.authDTO.LoginRequest;
 import com.hackaton.desafio.dto.authDTO.RegisterDTO;
 import com.hackaton.desafio.repository.UserRepository;
 import com.hackaton.desafio.services.UserService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -24,12 +25,12 @@ public class UserController {
     }
 
     @PostMapping("login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest user){
+    public ResponseEntity<?> login(@Valid @RequestBody LoginRequest user){
         return userService.login(user);
     }
 
     @PostMapping("register")
-    public ResponseEntity<?> register(@RequestBody RegisterDTO user){
+    public ResponseEntity<?> register(@Valid @RequestBody RegisterDTO user){
         return userService.register(user);
     }
 

@@ -51,7 +51,7 @@ public class UserService {
             return ResponseEntity.status(401).body("Invalid credentials");
         }
 
-        UserEntity user = userRepository.findByName(userRequest.name()).orElseThrow(() -> new RuntimeException("User not found"));
+        UserEntity user = userRepository.findByName(userRequest.name()).orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
         String token;
 

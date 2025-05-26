@@ -88,3 +88,18 @@ Esta API permite o cadastro de empresas, colaboradores e benefícios. Estabelece
 git clone <url-do-repositorio>
 cd Hackathon-tests
 
+### Variáveis de Ambiente
+
+# Configurações do Banco de Dados (usadas pelo docker-compose para o serviço 'api' e 'database')
+SPRING_DATASOURCE_URL=jdbc:postgresql://database:5432/hackathondb
+SPRING_DATASOURCE_USERNAME=hackathonuser
+SPRING_DATASOURCE_PASSWORD=hackathonpass
+
+# Credenciais para o container do PostgreSQL (usadas pelo serviço 'database')
+POSTGRES_USER=hackathonuser
+POSTGRES_PASSWORD=hackathonpass
+POSTGRES_DB=hackathondb
+
+# Segredo para a geração e validação de tokens JWT (usado pelo serviço 'api')
+API_SECURITY_TOKEN_SECRET=seu-segredo-super-secreto-aqui
+

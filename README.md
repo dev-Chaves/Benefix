@@ -122,15 +122,16 @@ docker-compose up -d
 ### Ou se o JAR foi construído (após mvn install)
 java -jar target/desafio-0.0.1-SNAPSHOT.jar
 
-### Testes
+## Testes
 
 ### Usando o Maven Wrapper
 ./mvnw test
 
-## Ou
+### Ou 
 mvn test
+##
 
-### Documentação da API e Endpoints
+## Documentação da API e Endpoints
 
 A documentação completa e interativa da API está disponível através do Swagger UI. Após iniciar a aplicação, acesse o seguinte endereço no seu navegador:
 

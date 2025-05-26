@@ -127,7 +127,7 @@ java -jar target/desafio-0.0.1-SNAPSHOT.jar
 ### Usando o Maven Wrapper
 ./mvnw test
 
-### Ou
+## Ou
 mvn test
 
 ### Documentação da API e Endpoints

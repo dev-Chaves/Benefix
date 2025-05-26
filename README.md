@@ -90,47 +90,47 @@ cd Hackathon-tests
 ```
 ### Variáveis de Ambiente
 
-# Configurações do Banco de Dados (usadas pelo docker-compose para o serviço 'api' e 'database')
+### Configurações do Banco de Dados (usadas pelo docker-compose para o serviço 'api' e 'database')
 SPRING_DATASOURCE_URL=jdbc:postgresql://database:5432/hackathondb
 SPRING_DATASOURCE_USERNAME=hackathonuser
 SPRING_DATASOURCE_PASSWORD=hackathonpass
 
-# Credenciais para o container do PostgreSQL (usadas pelo serviço 'database')
+### Credenciais para o container do PostgreSQL (usadas pelo serviço 'database')
 POSTGRES_USER=hackathonuser
 POSTGRES_PASSWORD=hackathonpass
 POSTGRES_DB=hackathondb
 
-# Segredo para a geração e validação de tokens JWT (usado pelo serviço 'api')
+### Segredo para a geração e validação de tokens JWT (usado pelo serviço 'api')
 API_SECURITY_TOKEN_SECRET=seu-segredo-super-secreto-aqui
 
 ### Build do Projeto 
 # No Linux ou macOS
 ./mvnw clean install
 
-# No Windows
+### No Windows
 mvnw.cmd clean install
 
-# Se instalado globalmente
+### Se instalado globalmente
 mvn clean install
 
 ### Executando a aplicação
 docker-compose up -d
 
-# Usando o Maven Wrapper
+### Usando o Maven Wrapper
 ./mvnw spring-boot:run
 
-# Ou se o JAR foi construído (após mvn install)
+### Ou se o JAR foi construído (após mvn install)
 java -jar target/desafio-0.0.1-SNAPSHOT.jar
 
 ### Testes
 
-# Usando o Maven Wrapper
+### Usando o Maven Wrapper
 ./mvnw test
 
-# Ou
+### Ou
 mvn test
 
-## Documentação da API e Endpoints
+### Documentação da API e Endpoints
 
 A documentação completa e interativa da API está disponível através do Swagger UI. Após iniciar a aplicação, acesse o seguinte endereço no seu navegador:
 

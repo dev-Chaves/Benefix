@@ -1,234 +1,158 @@
 # Desafio Hackaton API
 
-API desenvolvida para o Hackaton, com foco em gerenciamento de benefícios para empresas e seus colaboradores.
+API para gerenciamento de benefícios corporativos, parcerias entre empresas e integração com sistema de dúvidas via IA.
 
 ## Índice
-
-- [Descrição](#descrição)
+- [Sobre o Projeto](#sobre-o-projeto)
 - [Funcionalidades](#funcionalidades)
 - [Tecnologias Utilizadas](#tecnologias-utilizadas)
 - [Pré-requisitos](#pré-requisitos)
-- [Começando](#começando)
+- [Configuração e Execução](#configuração-e-execução)
   - [Clonando o Repositório](#clonando-o-repositório)
   - [Variáveis de Ambiente](#variáveis-de-ambiente)
   - [Build do Projeto](#build-do-projeto)
-- [Executando a Aplicação](#executando-a-aplicação)
-  - [Usando Docker Compose (Recomendado)](#usando-docker-compose-recomendado)
-  - [Localmente (Sem Docker)](#localmente-sem-docker)
+  - [Executando a Aplicação](#executando-a-aplicação)
 - [Banco de Dados](#banco-de-dados)
-  - [Inicialização](#inicialização)
-- [Documentação da API (Swagger)](#documentação-da-api-swagger)
-- [Visão Geral dos Endpoints](#visão-geral-dos-endpoints)
 - [Testes](#testes)
+- [Documentação da API](#documentação-da-api)
+  - [Swagger UI](#swagger-ui)
+  - [Principais Endpoints](#principais-endpoints)
 - [Licença](#licença)
 
-## Descrição
+---
 
-Esta API permite o cadastro de empresas, colaboradores e benefícios. Estabelece parcerias entre empresas para que os colaboradores de uma empresa possam usufruir dos benefícios oferecidos por empresas parceiras. A autenticação é realizada via JWT.
+## Sobre o Projeto
+
+Esta API permite:
+- Cadastro de empresas, colaboradores e benefícios.
+- Parcerias entre empresas para compartilhamento de benefícios.
+- Autenticação via JWT.
+- Sistema de dúvidas integrado à IA.
 
 ## Funcionalidades
 
-- **Autenticação de Usuários:**
-    - Login para usuários (colaboradores e admin).
-    - Registro de usuário ADMIN inicial (requer um token de registro específico).
-- **Operações de Administrador (requerem role ADMIN):**
-    - Criar novos colaboradores (tipo USER) para empresas.
-    - Cadastrar novos benefícios e associá-los a uma empresa fornecedora.
-    - Cadastrar novas empresas.
-    - Criar parcerias entre empresas.
-- **Operações de Usuário:**
-    - Visualizar benefícios oferecidos pela sua própria empresa.
-    - Visualizar benefícios oferecidos por empresas parceiras.
-    - Filtrar benefícios por categoria.
-    - Registrar dúvidas/perguntas para um sistema de IA (funcionalidade de criação de dúvida).
-- **Outras:**
-    - Endpoint de Health Check para verificar o status da API.
-    - Configuração de CORS permitindo acesso amplo (para desenvolvimento/hackathon).
-    - Tratamento global de exceções.
-    - Inicialização de dados de exemplo para ambiente de desenvolvimento/teste.
+- **Autenticação:**
+  - Login de usuários (colaboradores/admin).
+  - Registro de usuário ADMIN (com token de registro).
+- **Administração:**
+  - Cadastro de colaboradores, empresas, benefícios e parcerias.
+- **Usuário:**
+  - Visualização de benefícios próprios e de parceiros.
+  - Filtro de benefícios por categoria.
+  - Envio de dúvidas para IA.
+- **Outros:**
+  - Health Check.
+  - CORS amplo (desenvolvimento).
+  - Tratamento global de exceções.
+  - Dados de exemplo para desenvolvimento/teste.
 
 ## Tecnologias Utilizadas
 
-- **Backend:**
-    - Java 21
-    - Spring Boot 3.4.5
-    - Spring Web
-    - Spring Data JPA
-    - Spring Security
-- **Banco de Dados:**
-    - PostgreSQL
-- **Autenticação:**
-    - JSON Web Tokens (JWT) com a biblioteca `java-jwt`.
-    - BCrypt para hashing de senhas.
-- **Documentação da API:**
-    - Swagger/OpenAPI (via Springdoc).
-- **Build e Gerenciamento de Dependências:**
-    - Apache Maven (versão 3.9.9 via wrapper).
-- **Contêinerização:**
-    - Docker e Docker Compose.
-- **Testes:**
-    - JUnit 5
-    - Mockito
-    - Spring Test & Spring Security Test.
-- **Outras bibliotecas:**
-    - `spring-security-oauth2` (2.5.2.RELEASE) - *Nota: Esta é uma biblioteca mais antiga, o mecanismo principal de JWT parece ser via `java-jwt`.*
+- **Backend:** Java 21, Spring Boot 3.4.5, Spring Web, Spring Data JPA, Spring Security
+- **Banco de Dados:** PostgreSQL
+- **Autenticação:** JWT (`java-jwt`), BCrypt
+- **Documentação:** Swagger/OpenAPI (Springdoc)
+- **Build:** Maven 3.9.9+
+- **Contêinerização:** Docker, Docker Compose
+- **Testes:** JUnit 5, Mockito, Spring Test
 
 ## Pré-requisitos
 
-- Java JDK 21 ou superior.
-- Apache Maven 3.9.x ou superior (ou utilize o Maven Wrapper incluído).
-- Docker e Docker Compose (para execução via contêineres).
-- Git.
+- Java JDK 21+
+- Maven 3.9.x+ (ou Maven Wrapper)
+- Docker e Docker Compose
+- Git
 
-## Começando
+## Configuração e Execução
 
 ### Clonando o Repositório
-
 ```bash
 git clone <url-do-repositorio>
-cd Hackathon-tests
+cd HACKATON-REPO
 ```
+
 ### Variáveis de Ambiente
 
-### Configurações do Banco de Dados (usadas pelo docker-compose para o serviço 'api' e 'database')
+Crie um arquivo `.env` ou configure as variáveis conforme abaixo:
+
+#### Banco de Dados (docker-compose)
+```
 SPRING_DATASOURCE_URL=jdbc:postgresql://database:5432/hackathondb
 SPRING_DATASOURCE_USERNAME=hackathonuser
 SPRING_DATASOURCE_PASSWORD=hackathonpass
-
-### Credenciais para o container do PostgreSQL (usadas pelo serviço 'database')
 POSTGRES_USER=hackathonuser
 POSTGRES_PASSWORD=hackathonpass
 POSTGRES_DB=hackathondb
+```
 
-### Segredo para a geração e validação de tokens JWT (usado pelo serviço 'api')
+#### JWT
+```
 API_SECURITY_TOKEN_SECRET=seu-segredo-super-secreto-aqui
+```
 
-### Build do Projeto 
-# No Linux ou macOS
-./mvnw clean install
-
-### No Windows
-mvnw.cmd clean install
-
-### Se instalado globalmente
+### Build do Projeto
+```bash
 mvn clean install
+```
 
-### Executando a aplicação
-docker-compose up -d
+### Executando a Aplicação
+```bash
+docker-compose up
+```
 
-### Usando o Maven Wrapper
-./mvnw spring-boot:run
+## Banco de Dados
 
-### Ou se o JAR foi construído (após mvn install)
-java -jar target/desafio-0.0.1-SNAPSHOT.jar
+A aplicação utiliza PostgreSQL como banco de dados. Certifique-se de que o contêiner do banco está em execução antes de iniciar a aplicação.
 
 ## Testes
 
-### Usando o Maven Wrapper
-./mvnw test
-
-### Ou 
+Os testes podem ser executados com o seguinte comando:
+```bash
 mvn test
-##
+```
 
-## Documentação da API e Endpoints
+## Documentação da API
 
-A documentação completa e interativa da API está disponível através do Swagger UI. Após iniciar a aplicação, acesse o seguinte endereço no seu navegador:
+### Swagger UI
 
-`http://localhost:8080/swagger-ui.html`
+Após iniciar a aplicação, acesse:
+```
+http://localhost:8080/swagger-ui.html
+```
 
-Lá você poderá visualizar todos os endpoints, os modelos de dados para requisições e respostas, além de testar os endpoints diretamente pela interface.
-
-### Visão Geral dos Endpoints Principais
-
-A seguir, uma lista dos principais grupos de endpoints da aplicação:
-
----
+### Principais Endpoints
 
 #### Autenticação e Usuários (`/user`)
-* **`POST /user/login`**: Realiza o login de um usuário no sistema.
-    * **Requisição**: `LoginRequest` (name, password)
-    * **Resposta (Sucesso)**: `LoginResponse` (name, token)
-    * **Controlador**: `UserController`
-* **`POST /user/register`**: Registra um novo usuário ADMIN no sistema.
-    * Este endpoint requer um token de registro específico no corpo da requisição para autorizar a criação do usuário ADMIN.
-    * **Requisição**: `RegisterDTO` (name, password, enterprise, token)
-    * **Resposta (Sucesso)**: `RegisterResponse` (name, role)
-    * **Controlador**: `UserController`
+- `POST /user/login`: Login de usuário
+- `POST /user/register`: Registro de ADMIN (requer token)
 
----
-
-#### Operações de Administrador (`/admin`)
-*Estes endpoints requerem autenticação e que o usuário possua a role `ADMIN`.*
-
-* **`POST /admin/user`**: Cria um novo colaborador (usuário com role `USER`).
-    * **Requisição**: `CreateUserRequest` (name, password, enterpriseId)
-    * **Resposta (Sucesso)**: `UserResponse` (name, role, empresa)
-    * **Controlador**: `AdminController`
-* **`POST /admin/benefit`**: Cria um novo benefício.
-    * **Requisição**: `BenefitRequest` (description, supplierEnterpriseId, category)
-    * **Resposta (Sucesso)**: `BenefitResponse` (id, description, nameSupplierEnterprise, category)
-    * **Controlador**: `AdminController`
-* **`POST /admin/enterprise`**: Cria uma nova empresa.
-    * **Requisição**: `EnterpriseRequest` (name, cnpj)
-    * **Resposta (Sucesso)**: `EnterpriseResponse` (id, name, cnpj)
-    * **Controlador**: `AdminController`
-* **`POST /admin/partnership`**: Cria uma nova parceria entre empresas.
-    * **Requisição**: `PartnershipRequest` (supplierEnterpriseId, consumerEnterpriseId)
-    * **Resposta (Sucesso)**: `PartnershipResponse` (id, namePartnershipEnterprise, nameSupplierEnterprise)
-    * **Controlador**: `AdminController`
-
----
+#### Administração (`/admin`)
+- `POST /admin/user`: Criar colaborador
+- `POST /admin/benefit`: Criar benefício
+- `POST /admin/enterprise`: Criar empresa
+- `POST /admin/partnership`: Criar parceria
 
 #### Benefícios (`/benefits`)
-*Estes endpoints requerem autenticação.*
+- `GET /benefits/benefits-by-enterprise`: Benefícios da empresa do usuário
+- `GET /benefits/user-benefits`: Benefícios de empresas parceiras
+- `GET /benefits/category/{category}`: Benefícios por categoria
 
-* **`GET /benefits/benefits-by-enterprise`**: Retorna os benefícios oferecidos pela empresa do usuário autenticado.
-    * **Resposta (Sucesso)**: Lista de `BenefitResponse`
-    * **Controlador**: `BenefitController`
-* **`GET /benefits/user-benefits`**: Retorna os benefícios das empresas parceiras da empresa do usuário autenticado.
-    * **Resposta (Sucesso)**: Lista de `BenefitResponse`
-    * **Controlador**: `BenefitController`
-* **`GET /benefits/category/{category}`**: Retorna os benefícios (de empresas parceiras) filtrados por uma categoria específica.
-    * **Parâmetro de Path**: `category` (ex: `MARKET`, `HEALTH`)
-    * **Resposta (Sucesso)**: Lista de `BenefitResponse`
-    * **Controlador**: `BenefitController`
-
----
-
-#### Inteligência Artificial - Dúvidas (`/ia`)
-*Este endpoint requer autenticação.*
-
-* **`POST /ia/doubt`**: Cria uma nova dúvida/pergunta para o sistema de IA.
-    * **Requisição**: `DoubtRequest` (question)
-    * **Resposta (Sucesso)**: `DoubtResponse` (doubt, user, answered)
-    * **Controlador**: `IAController`
-
----
+#### Dúvidas IA (`/ia`)
+- `POST /ia/doubt`: Enviar dúvida para IA
 
 #### API Geral (`/api`)
-*Este endpoint é público.*
+- `GET /api/health`: Health check
 
-* **`GET /api/health`**: Verifica a saúde da aplicação.
-    * **Resposta (Sucesso)**: String indicando que a API está rodando.
-    * **Controlador**: `DemoController`
+#### Endpoints de Teste (`/user`)
+- `GET /user/enterprise`: Listar empresas
+- `GET /user/users`: Listar usuários
+- `GET /user/benefit`: Listar benefícios
 
----
+#### Segurança
+- Endpoints `/user/**`, `/api/**` e Swagger: acesso público
+- Endpoints `/admin/**`, `/benefits/**`, `/ia/**`: requerem autenticação JWT
+- Envie o token JWT no header: `Authorization: Bearer <token>`
 
-#### Endpoints de Teste/Visualização (`/user`)
-*Estes endpoints são públicos e parecem ser para visualização rápida de dados durante o desenvolvimento.*
+## Licença
 
-* **`GET /user/enterprise`**: Lista todas as empresas cadastradas.
-    * **Resposta (Sucesso)**: Lista de `EnterpriseResponse`
-* **`GET /user/users`**: Lista todos os usuários cadastrados.
-    * **Resposta (Sucesso)**: Lista de `UserResponse`
-* **`GET /user/benefit`**: Lista todos os benefícios cadastrados.
-    * **Resposta (Sucesso)**: Lista de `BenefitResponse`
-* **Controlador**: `TesteController`
-
----
-
-**Observações de Segurança:**
-* Os endpoints sob `/user/**` e `/api/**`, bem como os caminhos do Swagger, estão configurados para permitir acesso público (`permitAll`).
-* Todos os outros endpoints (`/admin/**`, `/benefits/**`, `/ia/**`) requerem autenticação.
-* A autenticação é baseada em Token JWT, que deve ser enviado no header `Authorization` como `Bearer <token>`.
+Este projeto está licenciado sob a licença MIT. Veja o arquivo `LICENSE` para mais detalhes.

@@ -1,6 +1,6 @@
 package com.hackaton.desafio.services;
 
-import com.hackaton.desafio.ValidationUtil;
+import com.hackaton.desafio.util.validation.ValidationUtil;
 import com.hackaton.desafio.config.TokenService;
 import com.hackaton.desafio.dto.IA.DoubtRequest;
 import com.hackaton.desafio.dto.IA.DoubtResponse;
@@ -16,15 +16,11 @@ import com.hackaton.desafio.repository.DoubtRepository;
 import com.hackaton.desafio.repository.EnterpriseRepository;
 import com.hackaton.desafio.repository.UserRepository;
 import com.hackaton.desafio.util.AuthUtil;
-import org.springframework.cglib.core.Local;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Service

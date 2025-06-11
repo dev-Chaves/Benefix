@@ -1,4 +1,4 @@
-package com.hackaton.desafio;
+package com.hackaton.desafio.util.validation;
 
 import org.springframework.stereotype.Component;
 

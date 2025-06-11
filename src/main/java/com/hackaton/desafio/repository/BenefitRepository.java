@@ -3,7 +3,6 @@ package com.hackaton.desafio.repository;
 import com.hackaton.desafio.entity.BenefitEntity;
 import com.hackaton.desafio.entity.EnterpriseEntity;
 import com.hackaton.desafio.entity.Enum.BenefitCategory;
-import com.hackaton.desafio.entity.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

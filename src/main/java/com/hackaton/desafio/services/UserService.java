@@ -1,5 +1,6 @@
 package com.hackaton.desafio.services;
 
+import com.hackaton.desafio.ValidationUtil;
 import com.hackaton.desafio.config.TokenService;
 import com.hackaton.desafio.dto.IA.DoubtRequest;
 import com.hackaton.desafio.dto.IA.DoubtResponse;
@@ -34,15 +35,17 @@ public class UserService {
     private final TokenService tokenService;
     private final EnterpriseRepository enterpriseRepository;
     private final DoubtRepository doubtRepository;
+    private final ValidationUtil validationUtil;
 
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, TokenService tokenService, EnterpriseRepository enterpriseRepository, DoubtRepository doubtRepository) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, TokenService tokenService, EnterpriseRepository enterpriseRepository, DoubtRepository doubtRepository, ValidationUtil validationUtil) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.tokenService = tokenService;
 
         this.enterpriseRepository = enterpriseRepository;
         this.doubtRepository = doubtRepository;
+        this.validationUtil = validationUtil;
     }
 
     public ResponseEntity<?> login(LoginRequest userRequest) {
@@ -72,14 +75,7 @@ public class UserService {
 
         String sb = "token";
 
-        if(userRequest == null
-                || userRequest.name() == null || userRequest.name().isBlank()
-                || userRequest.password() == null || userRequest.password().isBlank()
-                || userRequest.token() == null || userRequest.token().isBlank()
-                || userRequest.enterprise() == null || userRequest.enterprise() <= 0
-        ){
-            return ResponseEntity.badRequest().body("Invalid user data");
-        }
+        validationUtil.validateUserInput(userRequest.name(), userRequest.password(), userRequest.token());
 
         if(!userRequest.token().contentEquals(sb)){
             return ResponseEntity.status(401).body("Invalid token");

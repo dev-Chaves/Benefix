@@ -1,13 +1,12 @@
 package com.hackaton.desafio.services;
 
-import com.hackaton.desafio.util.validation.ValidationUtil;
 import com.hackaton.desafio.config.TokenService;
 import com.hackaton.desafio.dto.IA.DoubtRequest;
 import com.hackaton.desafio.dto.IA.DoubtResponse;
 import com.hackaton.desafio.dto.authDTO.LoginRequest;
-import com.hackaton.desafio.dto.authDTO.RegisterResponse;
 import com.hackaton.desafio.dto.authDTO.LoginResponse;
 import com.hackaton.desafio.dto.authDTO.RegisterDTO;
+import com.hackaton.desafio.dto.authDTO.RegisterResponse;
 import com.hackaton.desafio.entity.EnterpriseEntity;
 import com.hackaton.desafio.entity.IA.DoubtEntity;
 import com.hackaton.desafio.entity.Role.Role;
@@ -16,6 +15,8 @@ import com.hackaton.desafio.repository.DoubtRepository;
 import com.hackaton.desafio.repository.EnterpriseRepository;
 import com.hackaton.desafio.repository.UserRepository;
 import com.hackaton.desafio.util.AuthUtil;
+import com.hackaton.desafio.util.validation.validators.LoginValidator;
+import com.hackaton.desafio.util.validation.validators.RegisterValidator;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -31,24 +32,23 @@ public class UserService {
     private final TokenService tokenService;
     private final EnterpriseRepository enterpriseRepository;
     private final DoubtRepository doubtRepository;
-    private final ValidationUtil validationUtil;
+    private final RegisterValidator registerValidator;
+    private final LoginValidator loginValidator;
 
-
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, TokenService tokenService, EnterpriseRepository enterpriseRepository, DoubtRepository doubtRepository, ValidationUtil validationUtil) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, TokenService tokenService, EnterpriseRepository enterpriseRepository, DoubtRepository doubtRepository, RegisterValidator registerValidator, LoginValidator loginValidator) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.tokenService = tokenService;
 
         this.enterpriseRepository = enterpriseRepository;
         this.doubtRepository = doubtRepository;
-        this.validationUtil = validationUtil;
+        this.registerValidator = registerValidator;
+        this.loginValidator = loginValidator;
     }
 
     public ResponseEntity<?> login(LoginRequest userRequest) {
 
-        if(userRequest.name() == null || userRequest.password() == null) {
-            return ResponseEntity.status(401).body("Invalid credentials");
-        }
+        loginValidator.validate(userRequest);
 
         UserEntity user = userRepository.findByName(userRequest.name()).orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
@@ -71,7 +71,7 @@ public class UserService {
 
         String sb = "token";
 
-        validationUtil.validateUserInput(userRequest.name(), userRequest.password(), userRequest.token());
+        registerValidator.validate(userRequest);
 
         if(!userRequest.token().contentEquals(sb)){
             return ResponseEntity.status(401).body("Invalid token");

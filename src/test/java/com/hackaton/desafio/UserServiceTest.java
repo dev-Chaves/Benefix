@@ -3,12 +3,15 @@ package com.hackaton.desafio;
 
 import com.hackaton.desafio.config.TokenService;
 import com.hackaton.desafio.dto.authDTO.LoginRequest;
+import com.hackaton.desafio.dto.authDTO.LoginResponse;
 import com.hackaton.desafio.dto.authDTO.RegisterDTO;
 import com.hackaton.desafio.entity.EnterpriseEntity;
+import com.hackaton.desafio.entity.UserEntity;
 import com.hackaton.desafio.repository.EnterpriseRepository;
 import com.hackaton.desafio.repository.UserRepository;
 import com.hackaton.desafio.services.UserService;
-import com.hackaton.desafio.util.validation.ValidationUtil;
+import com.hackaton.desafio.util.validation.validators.LoginValidator;
+import com.hackaton.desafio.util.validation.validators.RegisterValidator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -37,7 +40,10 @@ public class UserServiceTest {
     private PasswordEncoder passwordEncoder;
 
     @Mock
-    private ValidationUtil validationUtil;
+    private RegisterValidator userValidator;
+
+    @Mock
+    private LoginValidator loginValidator;
 
     @InjectMocks
     private UserService userService;
@@ -91,6 +97,60 @@ public class UserServiceTest {
         ResponseEntity<?> response = userService.register(user);
 
         assertEquals(201, response.getStatusCode().value());
+    }
+
+    @Test
+    void loginSuccessWithEncodedPassword() {
+        LoginRequest loginRequest = new LoginRequest("test", "password123");
+        UserEntity user = new UserEntity();
+        user.setName("test");
+        user.setPassword("encodedPassword");
+
+        when(userRepository.findByName("test")).thenReturn(Optional.of(user));
+        when(passwordEncoder.matches("password123", "encodedPassword")).thenReturn(true);
+        when(tokenService.generateToken(user)).thenReturn("token123");
+
+        ResponseEntity<?> response = userService.login(loginRequest);
+        LoginResponse loginResponse = (LoginResponse) response.getBody();
+
+        assertEquals(200, response.getStatusCode().value());
+        assertEquals("test", loginResponse.name());
+        assertEquals("token123", loginResponse.token());
+    }
+
+    @Test
+    void loginSuccessWithPlainPassword() {
+        LoginRequest loginRequest = new LoginRequest("test", "password123");
+        UserEntity user = new UserEntity();
+        user.setName("test");
+        user.setPassword("password123");
+
+        when(userRepository.findByName("test")).thenReturn(Optional.of(user));
+        when(passwordEncoder.matches("password123", "password123")).thenReturn(false);
+        when(tokenService.generateToken(user)).thenReturn("token123");
+
+        ResponseEntity<?> response = userService.login(loginRequest);
+        LoginResponse loginResponse = (LoginResponse) response.getBody();
+
+        assertEquals(200, response.getStatusCode().value());
+        assertEquals("test", loginResponse.name());
+        assertEquals("token123", loginResponse.token());
+    }
+
+    @Test
+    void loginFailWithInvalidCredentials() {
+        LoginRequest loginRequest = new LoginRequest("test", "wrongpassword");
+        UserEntity user = new UserEntity();
+        user.setName("test");
+        user.setPassword("password123");
+
+        when(userRepository.findByName("test")).thenReturn(Optional.of(user));
+        when(passwordEncoder.matches("wrongpassword", "password123")).thenReturn(false);
+
+        ResponseEntity<?> response = userService.login(loginRequest);
+
+        assertEquals(401, response.getStatusCode().value());
+        assertEquals("Invalid credentials", response.getBody());
     }
 
 }

@@ -13,14 +13,11 @@ import java.util.List;
 @Repository
 public interface BenefitRepository extends JpaRepository<BenefitEntity, Long> {
 
-    @Query("SELECT b FROM BenefitEntity b WHERE b.supplierEnterprise.id = :enterpriseId")
+    @Query(value = "SELECT * FROM tb_benefity WHERE supplier_enterprise_id = :enterpriseId", nativeQuery = true)
     List<BenefitEntity> findByEnterpriseId(@Param("enterpriseId") Long enterpriseId);
 
-    List<BenefitEntity> findBySupplierEnterprise_IdIn(List<Long> enterpriseIds);
-
-    List<BenefitEntity> findByCategory(BenefitCategory category);
-
-    List<BenefitEntity> findByCategoryAndSupplierEnterprise(BenefitCategory category, EnterpriseEntity supplierEnterprise);
+    @Query(value = "SELECT * FROM tb_benefity WHERE supplier_enterprise_id IN :enterpriseIds", nativeQuery = true)
+    List<BenefitEntity> findBySupplierEnterpriseIdIn(@Param("enterpriseIds") List<Long> enterpriseIds);
 
     List<BenefitEntity> findByCategoryAndSupplierEnterpriseIn(BenefitCategory category, List<EnterpriseEntity> enterprises);
 

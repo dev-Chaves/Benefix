@@ -46,4 +46,3 @@ CREATE TABLE tb_answer (
     response TEXT,
     created_at TIMESTAMP,
     FOREIGN KEY (doubt_id) REFERENCES tb_doubt(id)
-);

@@ -27,13 +27,17 @@ spring:
     time-zone: America/Sao_Paulo
     locale: pt-BR
 
+  redis:
+    host: ${REDIS_HOST:redis}
+    port: ${REDIS_PORT:6379}
+    timeout: 2000
+    connect-timeout: 2000
+    client-type: lettuce
+
   cache:
     type: redis
-  redis:
-    host: ${REDIS_HOST}
-    port: ${REDIS_PORT}
-    password: ${REDIS_PASSWORD}
-    timeout: 2000
+    redis:
+      time-to-live: 3600000
 
   management:
     endpoints:
@@ -55,7 +59,7 @@ spring:
             include: ping
     health:
       redis:
-        enabled: true
+        enabled: false
       db:
         enabled: true
       livenessState:

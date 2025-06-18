@@ -11,6 +11,8 @@ import com.hackaton.desafio.repository.EnterpriseRepository;
 import com.hackaton.desafio.repository.PartnershipRepository;
 import com.hackaton.desafio.repository.UserRepository;
 import com.hackaton.desafio.util.AuthUtil;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -24,6 +26,7 @@ import java.util.List;
 import java.util.Objects;
 
 @Service
+@CacheConfig(cacheNames = "benefits")
 public class BenefitService {
 
     private final BenefitRepository benefitRepository;
@@ -40,6 +43,7 @@ public class BenefitService {
         this.partnershipRepository = partnershipRepository;
     }
 
+    @Cacheable(key = "'enterprise_' + T(com.hackaton.desafio.util.AuthUtil).getAuthenticatedUser().get().getEnterprise().getId()")
     public ResponseEntity<?> getBenefitsByEnterprise() {
 
         UserEntity user = AuthUtil.getAuthenticatedUser()
@@ -56,6 +60,7 @@ public class BenefitService {
         return ResponseEntity.ok(response);
     }
 
+    @Cacheable(key = "'patnership_' + #root.target.authUtil.getAuthenticatedUser.get().getEnterprise().getId()")
     public ResponseEntity<?> getBenefitOfPartneship(){
 
         UserEntity user = AuthUtil.getAuthenticatedUser()
@@ -82,6 +87,7 @@ public class BenefitService {
 
     }
 
+    @Cacheable(key = "'category_' + #category + '_enterprise_' + #root.target.authUtil.getAuthenticatedUser().get().getEnterprise().getId()")
     public ResponseEntity<List<BenefitResponse>> getBenefitsByCategory(String category) {
         try {
 

@@ -2,6 +2,7 @@ package com.hackaton.desafio.entity;
 
 import jakarta.persistence.*;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
@@ -9,7 +10,9 @@ import java.util.List;
 
 @Entity
 @Table(name = "tb_enterprise")
-public class EnterpriseEntity {
+public class EnterpriseEntity implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -55,6 +55,9 @@ Esta API permite:
 - **Build:** Maven 3.9.9+
 - **Contêinerização:** Docker, Docker Compose
 - **Testes:** JUnit 5, Mockito, Spring Test
+- **Migração de Banco:** Flyway
+- **Load Balancer:** Nginx
+- **Queries:** SQL Nativo, JPA/Hibernate
 
 ## Pré-requisitos
 
@@ -102,7 +105,44 @@ docker-compose up
 
 ## Banco de Dados
 
-A aplicação utiliza PostgreSQL como banco de dados. Certifique-se de que o contêiner do banco está em execução antes de iniciar a aplicação.
+### Migrações com Flyway
+
+O projeto utiliza Flyway para controle de versão do banco de dados. As migrações estão localizadas em `src/main/resources/db/migration/`:
+
+- `V1__Create_Initial_Tables.sql`: Criação inicial das tabelas
+- `V2__add_performance_indexes_to_benefit_entity.sql`: Adição de índices de performance
+
+As migrações são executadas automaticamente quando a aplicação inicia.
+
+### Queries SQL
+
+O projeto utiliza uma combinação de:
+- JPA/Hibernate para operações CRUD básicas
+- Queries SQL nativas para operações complexas
+- Índices otimizados para melhor performance
+
+Os scripts SQL iniciais podem ser encontrados em:
+- `data.sql`: Dados iniciais para desenvolvimento
+- `src/main/resources/db/migration/`: Scripts de migração
+
+## Infraestrutura
+
+### Load Balancing com Nginx
+
+A aplicação utiliza Nginx como load balancer, com as seguintes características:
+
+- Configuração em `src/main/resources/nginx/`
+- Balanceamento entre múltiplas instâncias da aplicação
+- Configuração de proxy reverso
+- Health checks integrados
+
+### Escalabilidade
+
+A aplicação está configurada para rodar com:
+- Múltiplas réplicas (2 por padrão)
+- Load balancing automático
+- Persistência de dados em volume Docker
+- Health checks para garantir disponibilidade
 
 ## Testes
 

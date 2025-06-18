@@ -27,6 +27,42 @@ spring:
     time-zone: America/Sao_Paulo
     locale: pt-BR
 
+  cache:
+    type: redis
+  redis:
+    host: ${REDIS_HOST}
+    port: ${REDIS_PORT}
+    password: ${REDIS_PASSWORD}
+    timeout: 2000
+
+  management:
+    endpoints:
+      web:
+        exposure:
+          include: health,info,metrics
+        base-path: /actuator
+        cors:
+          allowed-origins: "*"
+    endpoint:
+      health:
+        show-details: always
+        probes:
+          enabled: true
+        group:
+          readiness:
+            include: db,redis
+          liveness:
+            include: ping
+    health:
+      redis:
+        enabled: true
+      db:
+        enabled: true
+      livenessState:
+        enabled: true
+      readinessState:
+        enabled: true
+
 server:
   port: 8080
 
@@ -37,4 +73,3 @@ logging:
   level:
     org.hibernate.SQL: DEBUG
     org.hibernate.type.descriptor.sql.BasicBinder: TRACE
-

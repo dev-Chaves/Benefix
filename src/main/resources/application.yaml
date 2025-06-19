@@ -19,9 +19,8 @@ spring:
 
   flyway:
     enabled: true
-    locations: classpath:db/migration # Local padrão para seus scripts de migração
-    # clean-disabled: true # Recomendado em produção para evitar drops acidentais
-    baseline-on-migrate: true # Útil se você tiver um banco de dados existente
+    locations: classpath:db/migration
+    baseline-on-migrate: true
 
   jackson:
     time-zone: America/Sao_Paulo
@@ -29,48 +28,53 @@ spring:
 
   data:
     redis:
-      host: ${REDIS_HOST}
-      port: ${REDIS_PORT}
+      host: ${REDIS_HOST:redis}
+      port: ${REDIS_PORT:6379}
       password: ${REDIS_PASSWORD}
-      timeout: 2000
-      connect-timeout: 2000
-      client-type: lettuce
+      timeout: 2000ms
+      connect-timeout: 2000ms
+      lettuce:
+        pool:
+          max-active: 8
+          max-idle: 8
+          min-idle: 0
+          max-wait: -1ms
       repositories:
         enabled: true
-
 
   cache:
     type: redis
     redis:
-      time-to-live: 3600000
+      time-to-live: 600000ms
+      cache-null-values: false
 
-  management:
-    endpoints:
-      web:
-        exposure:
-          include: health,info,metrics
-        base-path: /actuator
-        cors:
-          allowed-origins: "*"
-    endpoint:
-      health:
-        show-details: always
-        probes:
-          enabled: true
-        group:
-          readiness:
-            include: db,redis
-          liveness:
-            include: ping
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+      base-path: /actuator
+      cors:
+        allowed-origins: "*"
+  endpoint:
     health:
-      redis:
-        enabled: false
-      db:
+      show-details: always
+      probes:
         enabled: true
-      livenessState:
-        enabled: true
-      readinessState:
-        enabled: true
+      group:
+        readiness:
+          include: db,redis
+        liveness:
+          include: ping
+  health:
+    redis:
+      enabled: true
+    db:
+      enabled: true
+    livenessstate:
+      enabled: true
+    readinessstate:
+      enabled: true
 
 server:
   port: 8080
@@ -82,3 +86,5 @@ logging:
   level:
     org.hibernate.SQL: DEBUG
     org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+    org.springframework.data.redis: DEBUG
+    io.lettuce.core: DEBUG

@@ -1,5 +1,6 @@
 package com.hackaton.desafio.util;
 
+import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -25,6 +26,7 @@ public class EncryptionUtil {
 
     private SecretKeySpec secretKeySpec;
 
+    @PostConstruct
     public void init(){
         if (encryptionKey.length() != 16 && encryptionKey.length() != 24 && encryptionKey.length() != 32){
             throw new IllegalArgumentException("Encryption key deve ser 16, 24, 32");

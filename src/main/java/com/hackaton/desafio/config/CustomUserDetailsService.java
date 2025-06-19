@@ -8,12 +8,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import javax.crypto.BadPaddingException;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
-import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
 
@@ -29,22 +23,17 @@ public class CustomUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String cpf) throws UsernameNotFoundException {
 
         if (cpf == null || cpf.isEmpty()) {
-            throw new UsernameNotFoundException("Username cannot be null or empty");
+            throw new UsernameNotFoundException("CPF cannot be null or empty");
         }
 
         try {
-            String encrytedCpf = encryptionUtil.encrypt(cpf);
-            return userRepository.findByCpf(cpf).orElseThrow(()-> new UsernameNotFoundException("User not found"));
-        } catch (NoSuchPaddingException e) {
-            throw new RuntimeException(e);
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
-        } catch (IllegalBlockSizeException e) {
-            throw new RuntimeException(e);
-        } catch (BadPaddingException e) {
-            throw new RuntimeException(e);
+            String encryptedCpf = encryptionUtil.encrypt(cpf);
+
+            return userRepository.findByCpf(encryptedCpf)
+                    .orElseThrow(() -> new UsernameNotFoundException("User not found with CPF: " + cpf));
+
+        } catch (Exception e) {
+            throw new RuntimeException("Error processing user authentication", e);
         }
-
     }
-
 }

@@ -55,37 +55,30 @@ public class UserService {
 
     public ResponseEntity<?> login(LoginRequestV2 userRequest) {
 
-//        loginValidator.validate(userRequest);
-
         loginValidatorCpf.validate(userRequest);
 
         try {
             String encryptedCpf = encryptionUtil.encrypt(userRequest.cpf());
-        } catch (NoSuchPaddingException e) {
-            throw new RuntimeException(e);
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
-        } catch (IllegalBlockSizeException e) {
-            throw new RuntimeException(e);
-        } catch (BadPaddingException e) {
-            throw new RuntimeException(e);
+
+            UserEntity user = userRepository.findByCpf(encryptedCpf)
+                    .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+            String token;
+
+            if (passwordEncoder.matches(userRequest.password(), user.getPassword())) {
+                token = this.tokenService.generateToken(user);
+            } else if (user.getPassword().equals(userRequest.password())) {
+                token = this.tokenService.generateToken(user);
+            } else {
+                return ResponseEntity.status(401).body("Invalid credentials");
+            }
+
+            LoginResponse response = new LoginResponse(user.getName(), token);
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            throw new RuntimeException("Error during login process", e);
         }
-
-        UserEntity user = userRepository.findByCpf(userRequest.cpf()).orElseThrow(() -> new UsernameNotFoundException("User not found"));
-
-        String token;
-
-        if (passwordEncoder.matches(userRequest.password(), user.getPassword())) {
-            token = this.tokenService.generateToken(user);
-        } else if (user.getPassword().equals(userRequest.password()) ) {
-            token = this.tokenService.generateToken(user);
-        } else {
-            return ResponseEntity.status(401).body("Invalid credentials");
-        }
-
-        LoginResponse response = new LoginResponse(user.getName(), token);
-
-        return ResponseEntity.ok(response);
     }
 
     public ResponseEntity<?> register (RegisterDTO userRequest) {

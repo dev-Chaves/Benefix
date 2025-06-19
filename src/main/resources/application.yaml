@@ -11,7 +11,7 @@ spring:
   jpa:
     hibernate:
       ddl-auto: none
-    show-sql: true
+#    show-sql: true
     properties:
       hibernate:
         format_sql: true
@@ -82,9 +82,13 @@ server:
 jwt:
   secret: ${API_SECURITY_TOKEN_SECRET}
 
+encryption:
+  password: ${ENCRYPTION_PASSWORD:mySecretPassword123!@#}
+  salt: ${ENCRYPTION_SALT:mySaltValue456$%^}
+
 logging:
   level:
-    org.hibernate.SQL: DEBUG
+#    org.hibernate.SQL: DEBUG
     org.hibernate.type.descriptor.sql.BasicBinder: TRACE
     org.springframework.data.redis: DEBUG
     io.lettuce.core: DEBUG

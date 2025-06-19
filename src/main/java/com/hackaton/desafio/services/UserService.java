@@ -3,7 +3,7 @@ package com.hackaton.desafio.services;
 import com.hackaton.desafio.config.TokenService;
 import com.hackaton.desafio.dto.IA.DoubtRequest;
 import com.hackaton.desafio.dto.IA.DoubtResponse;
-import com.hackaton.desafio.dto.authDTO.LoginRequest;
+import com.hackaton.desafio.dto.authDTO.LoginRequestV2;
 import com.hackaton.desafio.dto.authDTO.LoginResponse;
 import com.hackaton.desafio.dto.authDTO.RegisterDTO;
 import com.hackaton.desafio.dto.authDTO.RegisterResponse;
@@ -15,7 +15,9 @@ import com.hackaton.desafio.repository.DoubtRepository;
 import com.hackaton.desafio.repository.EnterpriseRepository;
 import com.hackaton.desafio.repository.UserRepository;
 import com.hackaton.desafio.util.AuthUtil;
+import com.hackaton.desafio.util.EncryptionUtil;
 import com.hackaton.desafio.util.validation.validators.LoginValidator;
+import com.hackaton.desafio.util.validation.validators.LoginValidatorCpf;
 import com.hackaton.desafio.util.validation.validators.RegisterValidator;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -34,8 +36,10 @@ public class UserService {
     private final DoubtRepository doubtRepository;
     private final RegisterValidator registerValidator;
     private final LoginValidator loginValidator;
+    private final EncryptionUtil encryptionUtil;
+    private final LoginValidatorCpf loginValidatorCpf;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, TokenService tokenService, EnterpriseRepository enterpriseRepository, DoubtRepository doubtRepository, RegisterValidator registerValidator, LoginValidator loginValidator) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, TokenService tokenService, EnterpriseRepository enterpriseRepository, DoubtRepository doubtRepository, RegisterValidator registerValidator, LoginValidator loginValidator, EncryptionUtil encryptionUtil, LoginValidatorCpf loginValidatorCpf) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.tokenService = tokenService;
@@ -44,27 +48,36 @@ public class UserService {
         this.doubtRepository = doubtRepository;
         this.registerValidator = registerValidator;
         this.loginValidator = loginValidator;
+        this.encryptionUtil = encryptionUtil;
+        this.loginValidatorCpf = loginValidatorCpf;
     }
 
-    public ResponseEntity<?> login(LoginRequest userRequest) {
+    public ResponseEntity<?> login(LoginRequestV2 userRequest) {
 
-        loginValidator.validate(userRequest);
+        loginValidatorCpf.validate(userRequest);
 
-        UserEntity user = userRepository.findByName(userRequest.name()).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        try {
+            String encryptedCpf = encryptionUtil.encrypt(userRequest.cpf());
 
-        String token;
+            UserEntity user = userRepository.findByCpf(encryptedCpf)
+                    .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
-        if (passwordEncoder.matches(userRequest.password(), user.getPassword())) {
-            token = this.tokenService.generateToken(user);
-        } else if (user.getPassword().equals(userRequest.password()) ) {
-            token = this.tokenService.generateToken(user);
-        } else {
-            return ResponseEntity.status(401).body("Invalid credentials");
+            String token;
+
+            if (passwordEncoder.matches(userRequest.password(), user.getPassword())) {
+                token = this.tokenService.generateToken(user);
+            } else if (user.getPassword().equals(userRequest.password())) {
+                token = this.tokenService.generateToken(user);
+            } else {
+                return ResponseEntity.status(401).body("Invalid credentials");
+            }
+
+            LoginResponse response = new LoginResponse(user.getName(), token);
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            throw new RuntimeException("Error during login process", e);
         }
-
-        LoginResponse response = new LoginResponse(user.getName(), token);
-
-        return ResponseEntity.ok(response);
     }
 
     public ResponseEntity<?> register (RegisterDTO userRequest) {

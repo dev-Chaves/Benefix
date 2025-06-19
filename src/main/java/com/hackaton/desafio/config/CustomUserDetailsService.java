@@ -2,30 +2,38 @@ package com.hackaton.desafio.config;
 
 import com.hackaton.desafio.entity.UserEntity;
 import com.hackaton.desafio.repository.UserRepository;
+import com.hackaton.desafio.util.EncryptionUtil;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
 
     private final UserRepository userRepository;
+    private final EncryptionUtil encryptionUtil;
 
-    public CustomUserDetailsService(UserRepository userRepository) {
+    public CustomUserDetailsService(UserRepository userRepository, EncryptionUtil encryptionUtil) {
         this.userRepository = userRepository;
+        this.encryptionUtil = encryptionUtil;
     }
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(String cpf) throws UsernameNotFoundException {
 
-        if (username == null || username.isEmpty()) {
-            throw new UsernameNotFoundException("Username cannot be null or empty");
+        if (cpf == null || cpf.isEmpty()) {
+            throw new UsernameNotFoundException("CPF cannot be null or empty");
         }
 
-        return userRepository.findByName(username).orElseThrow(()-> new UsernameNotFoundException("User not found"));
-    }
+        try {
+            String encryptedCpf = encryptionUtil.encrypt(cpf);
 
+            return userRepository.findByCpf(encryptedCpf)
+                    .orElseThrow(() -> new UsernameNotFoundException("User not found with CPF: " + cpf));
+
+        } catch (Exception e) {
+            throw new RuntimeException("Error processing user authentication", e);
+        }
+    }
 }

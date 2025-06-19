@@ -15,13 +15,19 @@ import com.hackaton.desafio.repository.DoubtRepository;
 import com.hackaton.desafio.repository.EnterpriseRepository;
 import com.hackaton.desafio.repository.UserRepository;
 import com.hackaton.desafio.util.AuthUtil;
+import com.hackaton.desafio.util.EncryptionUtil;
 import com.hackaton.desafio.util.validation.validators.LoginValidator;
+import com.hackaton.desafio.util.validation.validators.LoginValidatorCpf;
 import com.hackaton.desafio.util.validation.validators.RegisterValidator;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 
 @Service
@@ -34,8 +40,10 @@ public class UserService {
     private final DoubtRepository doubtRepository;
     private final RegisterValidator registerValidator;
     private final LoginValidator loginValidator;
+    private final EncryptionUtil encryptionUtil;
+    private final LoginValidatorCpf loginValidatorCpf;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, TokenService tokenService, EnterpriseRepository enterpriseRepository, DoubtRepository doubtRepository, RegisterValidator registerValidator, LoginValidator loginValidator) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, TokenService tokenService, EnterpriseRepository enterpriseRepository, DoubtRepository doubtRepository, RegisterValidator registerValidator, LoginValidator loginValidator, EncryptionUtil encryptionUtil, LoginValidatorCpf loginValidatorCpf) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.tokenService = tokenService;
@@ -44,13 +52,29 @@ public class UserService {
         this.doubtRepository = doubtRepository;
         this.registerValidator = registerValidator;
         this.loginValidator = loginValidator;
+        this.encryptionUtil = encryptionUtil;
+        this.loginValidatorCpf = loginValidatorCpf;
     }
 
     public ResponseEntity<?> login(LoginRequest userRequest) {
 
-        loginValidator.validate(userRequest);
+//        loginValidator.validate(userRequest);
 
-        UserEntity user = userRepository.findByName(userRequest.name()).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        loginValidatorCpf.validate(userRequest);
+
+        try {
+            String encryptedCpf = encryptionUtil.encrypt(userRequest.cpf());
+        } catch (NoSuchPaddingException e) {
+            throw new RuntimeException(e);
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        } catch (IllegalBlockSizeException e) {
+            throw new RuntimeException(e);
+        } catch (BadPaddingException e) {
+            throw new RuntimeException(e);
+        }
+
+        UserEntity user = userRepository.findByCpf(userRequest.cpf()).orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
         String token;
 

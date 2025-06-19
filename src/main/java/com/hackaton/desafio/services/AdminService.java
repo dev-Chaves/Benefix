@@ -17,6 +17,7 @@ import com.hackaton.desafio.repository.BenefitRepository;
 import com.hackaton.desafio.repository.EnterpriseRepository;
 import com.hackaton.desafio.repository.PartnershipRepository;
 import com.hackaton.desafio.repository.UserRepository;
+import com.hackaton.desafio.util.EncryptionUtil;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.http.HttpStatus;
@@ -25,6 +26,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 
 @Service
@@ -34,13 +39,15 @@ public class AdminService {
     private final EnterpriseRepository enterpriseRepository;
     private final PartnershipRepository partnershipRepository;
     private final PasswordEncoder passwordEncoder;
+    private final EncryptionUtil encryptionUtil;
     private final BenefitRepository benefitRepository;
 
-    public AdminService(UserRepository userRepository, EnterpriseRepository enterpriseRepository, PartnershipRepository partnershipRepository, PasswordEncoder passwordEncoder, BenefitRepository benefitRepository) {
+    public AdminService(UserRepository userRepository, EnterpriseRepository enterpriseRepository, PartnershipRepository partnershipRepository, PasswordEncoder passwordEncoder, EncryptionUtil encryptionUtil, BenefitRepository benefitRepository) {
         this.userRepository = userRepository;
         this.enterpriseRepository = enterpriseRepository;
         this.partnershipRepository = partnershipRepository;
         this.passwordEncoder = passwordEncoder;
+        this.encryptionUtil = encryptionUtil;
         this.benefitRepository = benefitRepository;
     }
 
@@ -53,7 +60,7 @@ public class AdminService {
 
         if(userRequest == null
                 || userRequest.name() == null || userRequest.name().isBlank()
-                || userRequest.password() == null || userRequest.password().isBlank()){
+                || userRequest.password() == null || userRequest.password().isBlank() || userRequest.cpf() == null){
             return ResponseEntity.badRequest().body("Invalid user data");
         }
 
@@ -61,6 +68,17 @@ public class AdminService {
 
         user.setName(userRequest.name());
         user.setPassword(passwordEncoder.encode(userRequest.password()));
+        try {
+            user.setCpf(encryptionUtil.encrypt(userRequest.cpf()));
+        } catch (NoSuchPaddingException e) {
+            throw new RuntimeException(e);
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        } catch (IllegalBlockSizeException e) {
+            throw new RuntimeException(e);
+        } catch (BadPaddingException e) {
+            throw new RuntimeException(e);
+        }
         user.setEnterprise(enterprise);
         user.setRole(Role.USER);
         user.setCreatedAt(LocalDateTime.now());

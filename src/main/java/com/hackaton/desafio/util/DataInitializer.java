@@ -25,17 +25,19 @@ public class DataInitializer implements CommandLineRunner {
     private final BenefitRepository benefitRepository;
     private final PartnershipRepository partnershipRepository;
     private final PasswordEncoder passwordEncoder;
+    private final EncryptionUtil encryptionUtil;
 
     public DataInitializer(EnterpriseRepository enterpriseRepository,
                            UserRepository userRepository,
                            BenefitRepository benefitRepository,
                            PartnershipRepository partnershipRepository,
-                           PasswordEncoder passwordEncoder) {
+                           PasswordEncoder passwordEncoder, EncryptionUtil encryptionUtil) {
         this.enterpriseRepository = enterpriseRepository;
         this.userRepository = userRepository;
         this.benefitRepository = benefitRepository;
         this.partnershipRepository = partnershipRepository;
         this.passwordEncoder = passwordEncoder;
+        this.encryptionUtil = encryptionUtil;
     }
 
     @Override
@@ -72,9 +74,10 @@ public class DataInitializer implements CommandLineRunner {
                         try {
                             String userName = "User " + userCounter;
                             String cpf = generateSequentialCpf(userCounter);
+                            String encryptedCPF = encryptionUtil.encrypt(cpf);
 
                             // Usando construtor correto: name, password, cpf, enterprise
-                            UserEntity user = new UserEntity(userName, defaultPassword, cpf, enterprise);
+                            UserEntity user = new UserEntity(userName, defaultPassword, encryptedCPF, enterprise);
                             users.add(user);
 
                             userCounter++;

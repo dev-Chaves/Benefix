@@ -56,7 +56,12 @@ public class UserService {
         loginValidatorCpf.validate(userRequest);
 
         try {
+
+            System.out.println(userRequest.cpf());
+
             String encryptedCpf = encryptionUtil.encrypt(userRequest.cpf());
+
+            System.out.println(encryptedCpf);
 
             UserEntity user = userRepository.findByCpf(encryptedCpf).orElseThrow(() -> new UsernameNotFoundException("User not found"));
 

@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service;
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 
@@ -35,13 +37,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         try {
             String encrytedCpf = encryptionUtil.encrypt(cpf);
             return userRepository.findByCpf(cpf).orElseThrow(()-> new UsernameNotFoundException("User not found"));
-        } catch (NoSuchPaddingException e) {
-            throw new RuntimeException(e);
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
-        } catch (IllegalBlockSizeException e) {
-            throw new RuntimeException(e);
-        } catch (BadPaddingException e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
 

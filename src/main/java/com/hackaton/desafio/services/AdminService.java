@@ -70,15 +70,10 @@ public class AdminService {
         user.setPassword(passwordEncoder.encode(userRequest.password()));
         try {
             user.setCpf(encryptionUtil.encrypt(userRequest.cpf()));
-        } catch (NoSuchPaddingException e) {
-            throw new RuntimeException(e);
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
-        } catch (IllegalBlockSizeException e) {
-            throw new RuntimeException(e);
-        } catch (BadPaddingException e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
+
         user.setEnterprise(enterprise);
         user.setRole(Role.USER);
         user.setCreatedAt(LocalDateTime.now());

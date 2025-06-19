@@ -3,10 +3,7 @@ package com.hackaton.desafio.services;
 import com.hackaton.desafio.config.TokenService;
 import com.hackaton.desafio.dto.IA.DoubtRequest;
 import com.hackaton.desafio.dto.IA.DoubtResponse;
-import com.hackaton.desafio.dto.authDTO.LoginRequest;
-import com.hackaton.desafio.dto.authDTO.LoginResponse;
-import com.hackaton.desafio.dto.authDTO.RegisterDTO;
-import com.hackaton.desafio.dto.authDTO.RegisterResponse;
+import com.hackaton.desafio.dto.authDTO.*;
 import com.hackaton.desafio.entity.EnterpriseEntity;
 import com.hackaton.desafio.entity.IA.DoubtEntity;
 import com.hackaton.desafio.entity.Role.Role;
@@ -56,7 +53,7 @@ public class UserService {
         this.loginValidatorCpf = loginValidatorCpf;
     }
 
-    public ResponseEntity<?> login(LoginRequest userRequest) {
+    public ResponseEntity<?> login(LoginRequestV2 userRequest) {
 
 //        loginValidator.validate(userRequest);
 

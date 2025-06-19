@@ -3,6 +3,7 @@ package com.hackaton.desafio;
 
 import com.hackaton.desafio.config.TokenService;
 import com.hackaton.desafio.dto.authDTO.LoginRequest;
+import com.hackaton.desafio.dto.authDTO.LoginRequestV2;
 import com.hackaton.desafio.dto.authDTO.LoginResponse;
 import com.hackaton.desafio.dto.authDTO.RegisterDTO;
 import com.hackaton.desafio.entity.EnterpriseEntity;
@@ -60,7 +61,7 @@ public class UserServiceTest {
 
     @Test
     void return401WhenUserCredentialsAreNull(){
-        LoginRequest user = new LoginRequest(null, null);
+        LoginRequestV2 user = new LoginRequestV2(null, null);
 
         ResponseEntity<?> response = userService.login(user);
 
@@ -69,7 +70,7 @@ public class UserServiceTest {
 
     @Test
     void return401WhenUserNotFound(){
-        LoginRequest user = new LoginRequest("new", "new");
+        LoginRequestV2 user = new LoginRequestV2("new", "new");
 
         when(userRepository.findByName("new")).thenReturn(Optional.empty());
 
@@ -101,7 +102,7 @@ public class UserServiceTest {
 
     @Test
     void loginSuccessWithEncodedPassword() {
-        LoginRequest loginRequest = new LoginRequest("test", "password123");
+        LoginRequestV2 loginRequest = new LoginRequestV2("test", "password123");
         UserEntity user = new UserEntity();
         user.setName("test");
         user.setPassword("encodedPassword");
@@ -120,7 +121,7 @@ public class UserServiceTest {
 
     @Test
     void loginSuccessWithPlainPassword() {
-        LoginRequest loginRequest = new LoginRequest("test", "password123");
+        LoginRequestV2 loginRequest = new LoginRequestV2("test", "password123");
         UserEntity user = new UserEntity();
         user.setName("test");
         user.setPassword("password123");
@@ -139,7 +140,7 @@ public class UserServiceTest {
 
     @Test
     void loginFailWithInvalidCredentials() {
-        LoginRequest loginRequest = new LoginRequest("test", "wrongpassword");
+        LoginRequestV2 loginRequest = new LoginRequestV2("test", "wrongpassword");
         UserEntity user = new UserEntity();
         user.setName("test");
         user.setPassword("password123");

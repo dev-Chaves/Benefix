@@ -1,11 +1,12 @@
 package com.hackaton.desafio.util.validation.validators;
 
-import com.hackaton.desafio.dto.authDTO.LoginRequest;
+import com.hackaton.desafio.dto.authDTO.LoginRequestV2;
 import com.hackaton.desafio.util.validation.Validator;
 
-public class LoginValidatorCpf implements Validator<LoginRequest> {
+public class LoginValidatorCpf implements Validator<LoginRequestV2> {
+
     @Override
-    public void validate(LoginRequest input) {
+    public void validate(LoginRequestV2 input) {
         if (input.cpf() == null || input.cpf().isBlank()) {
             throw new IllegalArgumentException("Invalid Credentials");
         }

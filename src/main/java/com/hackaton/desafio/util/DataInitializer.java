@@ -27,15 +27,18 @@ public class DataInitializer implements CommandLineRunner {
     private final PartnershipRepository partnershipRepository;
     private final Faker faker = new Faker(Locale.of("pt", "BR"));
     private final PasswordEncoder passwordEncoder;
+    private final EncryptionUtil encryptionUtil;
 
-    public DataInitializer(EnterpriseRepository enterpriseRepository, UserRepository userRepository, BenefitRepository benefitRepository, PartnershipRepository partnershipRepository, PasswordEncoder passwordEncoder) {
+    public DataInitializer(EnterpriseRepository enterpriseRepository, UserRepository userRepository, BenefitRepository benefitRepository, PartnershipRepository partnershipRepository, PasswordEncoder passwordEncoder, EncryptionUtil encryptionUtil) {
         this.enterpriseRepository = enterpriseRepository;
         this.userRepository = userRepository;
         this.benefitRepository = benefitRepository;
         this.partnershipRepository = partnershipRepository;
         this.passwordEncoder = passwordEncoder;
+        this.encryptionUtil = encryptionUtil;
     }
 
+    private final Set<String> generatedCpfs = new HashSet<>();
     @Override
     @Transactional
     public void run(String... args) {
@@ -57,18 +60,41 @@ public class DataInitializer implements CommandLineRunner {
                 System.out.println("   ✅ Enterprises created!");
 
                 // --- Geração de Usuários ---
-                int usersPerEnterprise = 50; // 50 usuários por empresa, totalizando 500 * 50 = 25.000 usuários
+                int usersPerEnterprise = 50;
                 List<UserEntity> users = new ArrayList<>();
-                System.out.println("   - Creating " + (numEnterprises * usersPerEnterprise) + " Users...");
                 String defaultPassword = "senha123";
                 String encodedDefaultPassword = passwordEncoder.encode(defaultPassword);
 
                 for (int i = 0; i < numEnterprises; i++) {
                     EnterpriseEntity enterprise = enterprises.get(i);
                     for (int j = 0; j < usersPerEnterprise; j++) {
-                        String userName = "user" + i + "_" + j; // Nomes únicos e previsíveis para login
-                        String cpf = faker.number().digits(11);
-                        UserEntity user = new UserEntity(userName, encodedDefaultPassword, cpf, enterprise);
+                        String userName = "user" + i + "_" + j;
+                        String plainCpf;
+                        String encryptedCpf;
+                        int attempts = 0;
+
+                        do {
+                            plainCpf = faker.idNumber().ssnValid().replaceAll("[.-]", "");
+                            attempts++;
+                            if (attempts > 200 && generatedCpfs.contains(plainCpf)) { // Aumentei tentativas
+                                System.err.println("      ❌ Could not generate unique and valid CPF after many attempts. Skipping user.");
+                                plainCpf = null;
+                                break;
+                            }
+                        } while (generatedCpfs.contains(plainCpf) || !CpfUtil.isValidCpf(plainCpf)); // <--- Valida CPF aqui!
+
+                        if (plainCpf == null) continue;
+
+                        try {
+                            encryptedCpf = encryptionUtil.encrypt(plainCpf);
+                        } catch (Exception e) {
+                            System.err.println("      ❌ Error encrypting CPF for user " + userName + ": " + e.getMessage());
+                            continue;
+                        }
+
+                        generatedCpfs.add(plainCpf);
+
+                        UserEntity user = new UserEntity(userName, encryptedCpf, encodedDefaultPassword, enterprise);
                         users.add(user);
                     }
                 }

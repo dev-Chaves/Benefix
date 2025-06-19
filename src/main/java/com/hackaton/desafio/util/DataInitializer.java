@@ -10,6 +10,7 @@ import com.hackaton.desafio.repository.EnterpriseRepository;
 import com.hackaton.desafio.repository.PartnershipRepository;
 import com.hackaton.desafio.repository.UserRepository;
 import jakarta.persistence.Column;
+import jakarta.transaction.Transactional;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
@@ -33,6 +34,7 @@ public class DataInitializer implements CommandLineRunner {
     }
 
     @Override
+    @Transactional
     public void run(String... args) {
         try {
             if (enterpriseRepository.count() == 0) {

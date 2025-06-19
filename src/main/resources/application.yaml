@@ -82,9 +82,11 @@ server:
 jwt:
   secret: ${API_SECURITY_TOKEN_SECRET}
 
+ENCRYPTION_KEY: ${ENCRYPTION_KEY}
+
 logging:
   level:
-    org.hibernate.SQL: DEBUG
+#    org.hibernate.SQL: DEBUG
     org.hibernate.type.descriptor.sql.BasicBinder: TRACE
     org.springframework.data.redis: DEBUG
     io.lettuce.core: DEBUG

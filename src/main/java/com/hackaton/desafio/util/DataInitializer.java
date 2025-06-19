@@ -48,7 +48,7 @@ public class DataInitializer implements CommandLineRunner {
                 System.out.println("🚀 Initializing data for load testing...");
 
                 // --- Geração de Empresas ---
-                int numEnterprises = 500; // Aumentei para 500 para ter mais base
+                int numEnterprises = 50; // Aumentei para 500 para ter mais base
                 List<EnterpriseEntity> enterprises = new ArrayList<>();
                 System.out.println("   - Creating " + numEnterprises + " Enterprises...");
                 for (int i = 0; i < numEnterprises; i++) {
@@ -60,7 +60,7 @@ public class DataInitializer implements CommandLineRunner {
                 System.out.println("   ✅ Enterprises created!");
 
                 // --- Geração de Usuários ---
-                int usersPerEnterprise = 50;
+                int usersPerEnterprise = 20;
                 List<UserEntity> users = new ArrayList<>();
                 String defaultPassword = "senha123";
                 String encodedDefaultPassword = passwordEncoder.encode(defaultPassword);
@@ -74,9 +74,9 @@ public class DataInitializer implements CommandLineRunner {
                         int attempts = 0;
 
                         do {
-                            plainCpf = faker.idNumber().ssnValid().replaceAll("[.-]", "");
+                            plainCpf = faker.number().digits(11);
                             attempts++;
-                            if (attempts > 200 && generatedCpfs.contains(plainCpf)) { // Aumentei tentativas
+                            if (attempts > 100 && generatedCpfs.contains(plainCpf)) { // Aumentei tentativas
                                 System.err.println("      ❌ Could not generate unique and valid CPF after many attempts. Skipping user.");
                                 plainCpf = null;
                                 break;
@@ -120,7 +120,7 @@ public class DataInitializer implements CommandLineRunner {
 
                 // --- Geração de Parcerias ---
                 // Para evitar duplicatas e ter parcerias relevantes
-                int numPartnerships = 1000; // Tentar criar 1000 parcerias
+                int numPartnerships = 100; // Tentar criar 1000 parcerias
                 List<PartnershipEntity> partnerships = new ArrayList<>();
                 Set<String> existingPartnerships = new HashSet<>(); // Para evitar duplicatas
 

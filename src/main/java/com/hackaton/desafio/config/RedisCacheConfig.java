@@ -23,19 +23,21 @@ public class RedisCacheConfig {
                 .disableCachingNullValues();
     }
 
-//    @Value("${spring.data.redis.host}")
-    private String hostName = "redis";
+    @Value("${REDIS_HOST:redis}")
+    private String hostName;
 
-//    @Value("${spring.data.redis.port}")
-    private int port = 6379;
+    @Value("${REDIS_PORT:6379}")
+    private int port;
+
+    @Value("${REDIS_PASSWORD}")
+    private String password;
 
     @Bean
     public LettuceConnectionFactory lettuceConnectionFactory() {
-        // ! You have to provide the redisStandaloneConfiguration or else the app wont
-        // ! work with docker
         RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration();
         redisStandaloneConfiguration.setHostName(hostName);
         redisStandaloneConfiguration.setPort(port);
+        redisStandaloneConfiguration.setPassword(password);
         return new LettuceConnectionFactory(redisStandaloneConfiguration);
     }
 

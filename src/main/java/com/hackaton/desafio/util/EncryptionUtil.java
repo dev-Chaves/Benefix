@@ -15,7 +15,7 @@ import java.security.SecureRandom;
 import java.util.Base64;
 
 @Component
-public class EncryptUtil {
+public class EncryptionUtil {
 
     private static final String ALGORITHM = "AES";
     private static final String CIPHER_TRANSFORMATION = "AES/CBC/PKCS5Padding";

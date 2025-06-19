@@ -44,7 +44,7 @@ public class BenefitService {
     }
 
     @Cacheable(key = "'enterprise_' + T(com.hackaton.desafio.util.AuthUtil).getAuthenticatedUser().get().getEnterprise().getId()")
-    public ResponseEntity<?> getBenefitsByEnterprise() {
+    public List<BenefitResponse> getBenefitsByEnterprise() {
 
         UserEntity user = AuthUtil.getAuthenticatedUser()
                 .orElseThrow(() -> new RuntimeException("User not authenticated"));
@@ -53,15 +53,13 @@ public class BenefitService {
 
         List<BenefitEntity> benefits = benefitRepository.findByEnterpriseId(user.getEnterprise().getId());
 
-        List<BenefitResponse> response = benefits.stream()
+        return benefits.stream()
                 .map(b -> new BenefitResponse(b.getId(), b.getDescription(), b.getSupplierEnterprise().getEnterprise(), b.getCategory()))
                 .toList();
-
-        return ResponseEntity.ok(response);
     }
 
-    @Cacheable(key = "'patnership_' + #root.target.authUtil.getAuthenticatedUser.get().getEnterprise().getId()")
-    public ResponseEntity<?> getBenefitOfPartneship(){
+    @Cacheable(key = "'partnership_' + T(com.hackaton.desafio.util.AuthUtil).getAuthenticatedUser.get().getEnterprise().getId()")
+    public List<BenefitResponse> getBenefitOfPartneship(){
 
         UserEntity user = AuthUtil.getAuthenticatedUser()
                 .orElseThrow(() -> new RuntimeException("User not authenticated"));
@@ -80,15 +78,13 @@ public class BenefitService {
 
          List<BenefitEntity> benefits = benefitRepository.findBySupplierEnterpriseIdIn(partnershipIds);
 
-         List<BenefitResponse> responses = benefits.stream().map( b -> new BenefitResponse(b.getId(),b.getDescription(),b.getSupplierEnterprise().getEnterprise(), b.getCategory())).toList();
-
-         return ResponseEntity.ok(responses);
-
+         return benefits.stream().map( b -> new BenefitResponse(b.getId(),b.getDescription(),b.getSupplierEnterprise().getEnterprise(), b.getCategory())).toList();
 
     }
 
-    @Cacheable(key = "'category_' + #category + '_enterprise_' + #root.target.authUtil.getAuthenticatedUser().get().getEnterprise().getId()")
-    public ResponseEntity<List<BenefitResponse>> getBenefitsByCategory(String category) {
+
+    @Cacheable(key = "'category_' + #category + '_enterprise_' + T(com.hackaton.desafio.util.AuthUtil).getAuthenticatedUser().get().getEnterprise().getId()")
+    public List<BenefitResponse> getBenefitsByCategory(String category) {
         try {
 
             BenefitCategory cat = BenefitCategory.valueOf(category.toUpperCase());
@@ -117,7 +113,7 @@ public class BenefitService {
 
             System.out.println("benefits: " + benefits);
 
-            List<BenefitResponse> responses = benefits.stream()
+            return benefits.stream()
                     .map(b -> new BenefitResponse(
                             b.getId(),
                             b.getDescription(),
@@ -125,11 +121,22 @@ public class BenefitService {
                             b.getCategory()
                     )).toList();
 
-            return ResponseEntity.ok(responses);
-
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(List.of());
+            throw new RuntimeException("Invalid Argument" + e);
         }
+    }
+
+
+    public ResponseEntity<List<BenefitResponse>> getBenefitOfPartnershipResponse(){
+        return ResponseEntity.ok(getBenefitOfPartneship());
+    }
+
+    public ResponseEntity<List<BenefitResponse>> getBenefitByEnterpriseResponse(){
+        return ResponseEntity.ok(getBenefitsByEnterprise());
+    }
+
+    public ResponseEntity<List<BenefitResponse>> getBenefitsByCategoryResponse(String category){
+        return ResponseEntity.ok(getBenefitsByCategory(category));
     }
 
 }

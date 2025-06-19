@@ -3,7 +3,10 @@ package com.hackaton.desafio.services;
 import com.hackaton.desafio.config.TokenService;
 import com.hackaton.desafio.dto.IA.DoubtRequest;
 import com.hackaton.desafio.dto.IA.DoubtResponse;
-import com.hackaton.desafio.dto.authDTO.*;
+import com.hackaton.desafio.dto.authDTO.LoginRequestV2;
+import com.hackaton.desafio.dto.authDTO.LoginResponse;
+import com.hackaton.desafio.dto.authDTO.RegisterDTO;
+import com.hackaton.desafio.dto.authDTO.RegisterResponse;
 import com.hackaton.desafio.entity.EnterpriseEntity;
 import com.hackaton.desafio.entity.IA.DoubtEntity;
 import com.hackaton.desafio.entity.Role.Role;
@@ -21,10 +24,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import javax.crypto.BadPaddingException;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
-import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 
 @Service

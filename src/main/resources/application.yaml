@@ -82,6 +82,10 @@ server:
 jwt:
   secret: ${API_SECURITY_TOKEN_SECRET}
 
+encryption:
+  password: ${ENCRYPTION_PASSWORD:mySecretPassword123!@#}
+  salt: ${ENCRYPTION_SALT:mySaltValue456$%^}
+
 logging:
   level:
 #    org.hibernate.SQL: DEBUG

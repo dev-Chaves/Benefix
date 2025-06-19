@@ -1,84 +1,53 @@
 package com.hackaton.desafio.util;
 
-import jakarta.annotation.PostConstruct;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-
-import javax.crypto.BadPaddingException;
-import javax.crypto.Cipher;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
-import javax.crypto.spec.IvParameterSpec;
-import javax.crypto.spec.SecretKeySpec;
-import java.nio.charset.StandardCharsets;
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
 import java.util.Base64;
 
 @Component
 public class EncryptionUtil {
 
-    private static final String ALGORITHM = "AES";
-    private static final String CIPHER_TRANSFORMATION = "AES/CBC/PKCS5Padding";
+    // Chave fixa super simples - apenas para demonstração
+    private static final String SIMPLE_KEY = "HACKATON2024";
 
-    @Value("${ENCRYPTION_KEY}") // A chave de criptografia será lida de application.yaml ou .env
-    private String encryptionKey;
+    public String encrypt(String plainText) {
+        try {
+            // Criptografia ultra simples: XOR + Base64
+            StringBuilder encrypted = new StringBuilder();
 
-    private SecretKeySpec secretKeySpec;
+            for (int i = 0; i < plainText.length(); i++) {
+                char plainChar = plainText.charAt(i);
+                char keyChar = SIMPLE_KEY.charAt(i % SIMPLE_KEY.length());
+                char encryptedChar = (char) (plainChar ^ keyChar);
+                encrypted.append(encryptedChar);
+            }
 
-    @PostConstruct
-    public void init(){
-        if (encryptionKey.length() != 16 && encryptionKey.length() != 24 && encryptionKey.length() != 32){
-            throw new IllegalArgumentException("Encryption key deve ser 16, 24, 32");
+            // Codifica em Base64 para ter uma string segura
+            return Base64.getEncoder().encodeToString(encrypted.toString().getBytes());
+
+        } catch (Exception e) {
+            throw new RuntimeException("Erro na criptografia simples", e);
         }
-        this.secretKeySpec = new SecretKeySpec(encryptionKey.getBytes(StandardCharsets.UTF_8), ALGORITHM);
     }
 
-    public String encrypt(String textToEncrypt) throws NoSuchPaddingException, NoSuchAlgorithmException, IllegalBlockSizeException, BadPaddingException {
-        if (secretKeySpec == null){
-            init();
+    public String decrypt(String encryptedText) {
+        try {
+            // Decodifica do Base64
+            String xorString = new String(Base64.getDecoder().decode(encryptedText));
+
+            // Aplica XOR novamente para descriptografar
+            StringBuilder decrypted = new StringBuilder();
+
+            for (int i = 0; i < xorString.length(); i++) {
+                char encryptedChar = xorString.charAt(i);
+                char keyChar = SIMPLE_KEY.charAt(i % SIMPLE_KEY.length());
+                char decryptedChar = (char) (encryptedChar ^ keyChar);
+                decrypted.append(decryptedChar);
+            }
+
+            return decrypted.toString();
+
+        } catch (Exception e) {
+            throw new RuntimeException("Erro na descriptografia simples", e);
         }
-
-        Cipher cipher = Cipher.getInstance(CIPHER_TRANSFORMATION);
-
-        SecureRandom secureRandom = new SecureRandom();
-
-        byte[] iv = new byte[cipher.getBlockSize()];
-
-        secureRandom.nextBytes(iv);
-
-        IvParameterSpec ivSpec = new IvParameterSpec(iv);
-
-        byte[] encryptedBytes = cipher.doFinal(textToEncrypt.getBytes(StandardCharsets.UTF_8));
-
-
-        byte[] combined = new byte[iv.length + encryptedBytes.length];
-        System.arraycopy(iv, 0, combined, 0, iv.length);
-        System.arraycopy(encryptedBytes, 0, combined, iv.length, encryptedBytes.length);
-
-        return Base64.getEncoder().encodeToString(combined);
-
     }
-
-    public String decrypt(String encryptedText) throws Exception {
-        if (secretKeySpec == null) {
-            init(); // Garante que a chave foi inicializada
-        }
-
-        byte[] decodedCombined = Base64.getDecoder().decode(encryptedText);
-
-        Cipher cipher = Cipher.getInstance(CIPHER_TRANSFORMATION);
-        byte[] iv = new byte[cipher.getBlockSize()];
-        System.arraycopy(decodedCombined, 0, iv, 0, iv.length);
-        IvParameterSpec ivSpec = new IvParameterSpec(iv);
-
-        byte[] encryptedBytes = new byte[decodedCombined.length - iv.length];
-        System.arraycopy(decodedCombined, iv.length, encryptedBytes, 0, encryptedBytes.length);
-
-        cipher.init(Cipher.DECRYPT_MODE, secretKeySpec, ivSpec);
-
-        byte[] decryptedBytes = cipher.doFinal(encryptedBytes);
-        return new String(decryptedBytes, StandardCharsets.UTF_8);
-    }
-
 }

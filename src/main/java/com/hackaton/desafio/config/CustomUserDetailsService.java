@@ -35,7 +35,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         }
 
         try {
-            String encrytedCpf = encryptionUtil.encrypt(cpf);
+//            String encrytedCpf = encryptionUtil.encrypt(cpf);
             return userRepository.findByCpf(cpf).orElseThrow(()-> new UsernameNotFoundException("User not found"));
         } catch (Exception e) {
             throw new RuntimeException(e);

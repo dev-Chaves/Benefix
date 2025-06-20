@@ -18,7 +18,7 @@ public class EnterpriseEntity implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "enterprise", nullable = false, unique = true)
+    @Column(name = "enterprise", nullable = false)
     private String enterprise;
 
     @Column(name = "cnpj", nullable = false, unique = true)

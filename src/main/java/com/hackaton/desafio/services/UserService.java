@@ -3,7 +3,7 @@ package com.hackaton.desafio.services;
 import com.hackaton.desafio.config.TokenService;
 import com.hackaton.desafio.dto.IA.DoubtRequest;
 import com.hackaton.desafio.dto.IA.DoubtResponse;
-import com.hackaton.desafio.dto.authDTO.LoginRequest;
+import com.hackaton.desafio.dto.authDTO.LoginRequestV2;
 import com.hackaton.desafio.dto.authDTO.LoginResponse;
 import com.hackaton.desafio.dto.authDTO.RegisterDTO;
 import com.hackaton.desafio.dto.authDTO.RegisterResponse;
@@ -15,8 +15,9 @@ import com.hackaton.desafio.repository.DoubtRepository;
 import com.hackaton.desafio.repository.EnterpriseRepository;
 import com.hackaton.desafio.repository.UserRepository;
 import com.hackaton.desafio.util.AuthUtil;
-import com.hackaton.desafio.util.validation.validators.LoginValidator;
-import com.hackaton.desafio.util.validation.validators.RegisterValidator;
+import com.hackaton.desafio.util.EncryptionUtil;
+import com.hackaton.desafio.util.validation.validators.LoginValidatorCpf;
+import com.hackaton.desafio.util.validation.validators.RegisterValidatorCPF;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -32,46 +33,65 @@ public class UserService {
     private final TokenService tokenService;
     private final EnterpriseRepository enterpriseRepository;
     private final DoubtRepository doubtRepository;
-    private final RegisterValidator registerValidator;
-    private final LoginValidator loginValidator;
+    private final EncryptionUtil encryptionUtil;
+    private final LoginValidatorCpf loginValidatorCpf;
+    private final RegisterValidatorCPF registerValidatorCPF;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, TokenService tokenService, EnterpriseRepository enterpriseRepository, DoubtRepository doubtRepository, RegisterValidator registerValidator, LoginValidator loginValidator) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, TokenService tokenService, EnterpriseRepository enterpriseRepository, DoubtRepository doubtRepository, EncryptionUtil encryptionUtil, LoginValidatorCpf loginValidatorCpf, RegisterValidatorCPF registerValidatorCPF) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.tokenService = tokenService;
 
         this.enterpriseRepository = enterpriseRepository;
         this.doubtRepository = doubtRepository;
-        this.registerValidator = registerValidator;
-        this.loginValidator = loginValidator;
+        this.encryptionUtil = encryptionUtil;
+        this.loginValidatorCpf = loginValidatorCpf;
+        this.registerValidatorCPF = registerValidatorCPF;
     }
 
-    public ResponseEntity<?> login(LoginRequest userRequest) {
+    public ResponseEntity<?> login(LoginRequestV2 userRequest) {
 
-        loginValidator.validate(userRequest);
+//        loginValidator.validate(userRequest);
 
-        UserEntity user = userRepository.findByName(userRequest.name()).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        loginValidatorCpf.validate(userRequest);
 
-        String token;
+        try {
 
-        if (passwordEncoder.matches(userRequest.password(), user.getPassword())) {
-            token = this.tokenService.generateToken(user);
-        } else if (user.getPassword().equals(userRequest.password()) ) {
-            token = this.tokenService.generateToken(user);
-        } else {
-            return ResponseEntity.status(401).body("Invalid credentials");
+            System.out.println(userRequest.cpf());
+
+//            String encryptedCpf = encryptionUtil.encrypt(userRequest.cpf());
+
+//            System.out.println(encryptedCpf);
+
+            UserEntity user = userRepository.findByCpf(userRequest.cpf()).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+            String token;
+
+            if (passwordEncoder.matches(userRequest.password(), user.getPassword())) {
+                token = this.tokenService.generateToken(user);
+            } else if (user.getPassword().equals(userRequest.password()) ) {
+                token = this.tokenService.generateToken(user);
+            } else {
+                return ResponseEntity.status(401).body("Invalid credentials");
+            }
+
+            LoginResponse response = new LoginResponse(user.getName(), token);
+
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Login error: " + e.getMessage());
         }
 
-        LoginResponse response = new LoginResponse(user.getName(), token);
-
-        return ResponseEntity.ok(response);
     }
 
     public ResponseEntity<?> register (RegisterDTO userRequest) {
 
         String sb = "token";
 
-        registerValidator.validate(userRequest);
+//        registerValidator.validate(userRequest);
+
+        registerValidatorCPF.validate(userRequest);
 
         if(!userRequest.token().contentEquals(sb)){
             return ResponseEntity.status(401).body("Invalid token");
@@ -81,6 +101,7 @@ public class UserService {
 
         UserEntity newUser = new UserEntity();
         newUser.setName(userRequest.name());
+        newUser.setCpf(userRequest.cpf());
         newUser.setPassword(passwordEncoder.encode(userRequest.password()));
         newUser.setEnterprise(enterprise);
         newUser.setCreatedAt(LocalDateTime.now());

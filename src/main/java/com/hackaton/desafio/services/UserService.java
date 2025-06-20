@@ -59,11 +59,11 @@ public class UserService {
 
             System.out.println(userRequest.cpf());
 
-            String encryptedCpf = encryptionUtil.encrypt(userRequest.cpf());
+//            String encryptedCpf = encryptionUtil.encrypt(userRequest.cpf());
 
-            System.out.println(encryptedCpf);
+//            System.out.println(encryptedCpf);
 
-            UserEntity user = userRepository.findByCpf(encryptedCpf).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+            UserEntity user = userRepository.findByCpf(userRequest.cpf()).orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
             String token;
 
@@ -80,7 +80,7 @@ public class UserService {
             return ResponseEntity.ok(response);
 
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            return ResponseEntity.status(500).body("Login error: " + e.getMessage());
         }
 
     }

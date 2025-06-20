@@ -74,10 +74,11 @@ public class DataInitializer implements CommandLineRunner {
                         try {
                             String userName = "User " + userCounter;
                             String cpf = generateSequentialCpf(userCounter);
-                            String encryptedCPF = encryptionUtil.encrypt(cpf);
+
+//                            String encryptedCPF = encryptionUtil.encrypt(cpf);
 
                             // Usando construtor correto: name, password, cpf, enterprise
-                            UserEntity user = new UserEntity(userName, defaultPassword, encryptedCPF, enterprise);
+                            UserEntity user = new UserEntity(userName, defaultPassword, cpf, enterprise);
                             users.add(user);
 
                             userCounter++;

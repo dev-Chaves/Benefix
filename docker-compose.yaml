@@ -7,18 +7,18 @@ services:
     volumes:
       - ./src/main/resources/nginx/nginx.config:/etc/nginx/nginx.conf
       - ./src/main/resources/nginx/sites-enabled:/etc/nginx/sites-enabled
-    networks:
-      - backend
+    network_mode: host
     depends_on:
-      api:
+      api1:
+        condition: service_healthy
+      api2:
         condition: service_healthy
 
-  api:
+  api1: &api
     build: .
-    ports:
+    hostname: app1
+    expose:
       - "8080"
-    deploy:
-      replicas: 2
     depends_on:
       database:
         condition: service_healthy
@@ -33,8 +33,8 @@ services:
       REDIS_PORT: ${REDIS_PORT:-6379}
       REDIS_PASSWORD: ${REDIS_PASSWORD}
       ENCRYPTION_KEY: ${ENCRYPTION_KEY}
-    networks:
-      - backend
+      HTTP_PORT: 8080
+    network_mode: host
     restart: on-failure
     volumes:
       - ./logs:/app/logs
@@ -44,6 +44,51 @@ services:
       timeout: 10s
       retries: 3
       start_period: 40s
+
+  api2: &api
+    build: .
+    hostname: app2
+    expose:
+      - "8081"
+    depends_on:
+      database:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL}
+      SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
+      API_SECURITY_TOKEN_SECRET: ${API_SECURITY_TOKEN_SECRET}
+      REDIS_HOST: ${REDIS_HOST:-redis}
+      REDIS_PORT: ${REDIS_PORT:-6379}
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+      ENCRYPTION_KEY: ${ENCRYPTION_KEY}
+      HTTP_PORT: 8081
+    network_mode: host
+    restart: on-failure
+    volumes:
+      - ./logs:/app/logs
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8081/actuator/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+#  api2:
+#    <<: *api
+#    hostname: app2
+#    environment:
+#      SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL}
+#      SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME}
+#      SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
+#      API_SECURITY_TOKEN_SECRET: ${API_SECURITY_TOKEN_SECRET}
+#      REDIS_HOST: ${REDIS_HOST}
+#      REDIS_PORT: ${REDIS_PORT:-6379}
+#      REDIS_PASSWORD: ${REDIS_PASSWORD}
+#      ENCRYPTION_KEY: ${ENCRYPTION_KEY}
+#      SERVER_PORT: 8081
 
   database:
     image: postgres:latest
@@ -60,16 +105,14 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-    networks:
-      - backend
+    network_mode: host
 
   redis:
     image: redis:alpine
     command: redis-server --requirepass ${REDIS_PASSWORD}
     ports:
       - "6379:6379"
-    networks:
-      - backend
+    network_mode: host
     healthcheck:
       test: ["CMD", "sh", "-c", "redis-cli --no-auth-warning -a $$REDIS_PASSWORD ping"]
       interval: 10s
@@ -81,6 +124,7 @@ services:
 
 volumes:
   pgdata:
-networks:
-  backend:
-    driver: bridge
+
+#networks:
+#  backend:
+#    driver: bridge

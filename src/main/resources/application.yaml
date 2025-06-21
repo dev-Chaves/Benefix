@@ -77,7 +77,7 @@ management:
       enabled: true
 
 server:
-  port: 8080
+  port: ${HTTP_PORT}
 
 jwt:
   secret: ${API_SECURITY_TOKEN_SECRET}

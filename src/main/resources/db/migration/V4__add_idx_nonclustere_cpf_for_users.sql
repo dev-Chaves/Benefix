@@ -1,0 +1,1 @@
+CREATE NONCLUSTERED INDEX idx_cpf on tb_user (cpf)

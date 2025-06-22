@@ -51,19 +51,17 @@ public class UserService {
 
     public ResponseEntity<?> login(LoginRequestV2 userRequest) {
 
-//        loginValidator.validate(userRequest);
-
         loginValidatorCpf.validate(userRequest);
 
         try {
 
             System.out.println(userRequest.cpf());
 
-//            String encryptedCpf = encryptionUtil.encrypt(userRequest.cpf());
+            String encryptedCPF = encryptionUtil.encrypt(userRequest.cpf());
 
-//            System.out.println(encryptedCpf);
+            System.out.println(encryptedCPF);
 
-            UserEntity user = userRepository.findByCpf(userRequest.cpf()).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+            UserEntity user = userRepository.findByCpf(encryptedCPF).orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
             String token;
 
@@ -87,31 +85,39 @@ public class UserService {
 
     public ResponseEntity<?> register (RegisterDTO userRequest) {
 
-        String sb = "token";
+        try{
+            String sb = "token";
 
 //        registerValidator.validate(userRequest);
 
-        registerValidatorCPF.validate(userRequest);
+            registerValidatorCPF.validate(userRequest);
 
-        if(!userRequest.token().contentEquals(sb)){
-            return ResponseEntity.status(401).body("Invalid token");
+            if(!userRequest.token().contentEquals(sb)){
+                return ResponseEntity.status(401).body("Invalid token");
+            }
+
+            EnterpriseEntity enterprise = enterpriseRepository.findById(userRequest.enterprise()).orElseThrow(()-> new RuntimeException("Enterprise not found"));
+
+            String encryptedCPF = encryptionUtil.encrypt(userRequest.cpf());
+
+            UserEntity newUser = new UserEntity();
+            newUser.setName(userRequest.name());
+            newUser.setCpf(encryptedCPF);
+            newUser.setPassword(passwordEncoder.encode(userRequest.password()));
+            newUser.setEnterprise(enterprise);
+            newUser.setCreatedAt(LocalDateTime.now());
+            newUser.setRole(Role.ADMIN);
+
+            userRepository.save(newUser);
+
+            RegisterResponse response = new RegisterResponse(newUser.getName(), newUser.getRole());
+
+            return ResponseEntity.status(201).body(response);
+        }catch (Exception e){
+            throw new RuntimeException("User failed to register");
         }
 
-        EnterpriseEntity enterprise = enterpriseRepository.findById(userRequest.enterprise()).orElseThrow(()-> new RuntimeException("Enterprise not found"));
 
-        UserEntity newUser = new UserEntity();
-        newUser.setName(userRequest.name());
-        newUser.setCpf(userRequest.cpf());
-        newUser.setPassword(passwordEncoder.encode(userRequest.password()));
-        newUser.setEnterprise(enterprise);
-        newUser.setCreatedAt(LocalDateTime.now());
-        newUser.setRole(Role.ADMIN);
-
-        userRepository.save(newUser);
-
-        RegisterResponse response = new RegisterResponse(newUser.getName(), newUser.getRole());
-
-        return ResponseEntity.status(201).body(response);
     }
 
     public ResponseEntity<DoubtResponse> createDoubt(DoubtRequest doubtRequest){

@@ -14,6 +14,11 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -75,10 +80,9 @@ public class DataInitializer implements CommandLineRunner {
                             String userName = "User " + userCounter;
                             String cpf = generateSequentialCpf(userCounter);
 
-//                            String encryptedCPF = encryptionUtil.encrypt(cpf);
+                            String encryptedCPF = encryptionUtil.encrypt(cpf);
 
-                            // Usando construtor correto: name, password, cpf, enterprise
-                            UserEntity user = new UserEntity(userName, defaultPassword, cpf, enterprise);
+                            UserEntity user = new UserEntity(userName, defaultPassword, encryptedCPF, enterprise);
                             users.add(user);
 
                             userCounter++;

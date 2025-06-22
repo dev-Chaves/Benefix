@@ -1,4 +1,4 @@
-# Desafio Hackaton API
+# Benefix
 
 API para gerenciamento de benefícios corporativos, parcerias entre empresas e integração com sistema de dúvidas via IA.
 

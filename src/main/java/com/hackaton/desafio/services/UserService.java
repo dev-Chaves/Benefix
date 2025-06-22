@@ -15,6 +15,7 @@ import com.hackaton.desafio.repository.DoubtRepository;
 import com.hackaton.desafio.repository.EnterpriseRepository;
 import com.hackaton.desafio.repository.UserRepository;
 import com.hackaton.desafio.util.AuthUtil;
+import com.hackaton.desafio.util.CPFHasher;
 import com.hackaton.desafio.util.EncryptionUtil;
 import com.hackaton.desafio.util.validation.validators.LoginValidatorCpf;
 import com.hackaton.desafio.util.validation.validators.RegisterValidatorCPF;
@@ -36,8 +37,9 @@ public class UserService {
     private final EncryptionUtil encryptionUtil;
     private final LoginValidatorCpf loginValidatorCpf;
     private final RegisterValidatorCPF registerValidatorCPF;
+    private final CPFHasher cpfHasher;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, TokenService tokenService, EnterpriseRepository enterpriseRepository, DoubtRepository doubtRepository, EncryptionUtil encryptionUtil, LoginValidatorCpf loginValidatorCpf, RegisterValidatorCPF registerValidatorCPF) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, TokenService tokenService, EnterpriseRepository enterpriseRepository, DoubtRepository doubtRepository, EncryptionUtil encryptionUtil, LoginValidatorCpf loginValidatorCpf, RegisterValidatorCPF registerValidatorCPF, CPFHasher cpfHasher) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.tokenService = tokenService;
@@ -47,6 +49,7 @@ public class UserService {
         this.encryptionUtil = encryptionUtil;
         this.loginValidatorCpf = loginValidatorCpf;
         this.registerValidatorCPF = registerValidatorCPF;
+        this.cpfHasher = cpfHasher;
     }
 
     public ResponseEntity<?> login(LoginRequestV2 userRequest) {
@@ -57,7 +60,7 @@ public class UserService {
 
             System.out.println(userRequest.cpf());
 
-            String encryptedCPF = encryptionUtil.encrypt(userRequest.cpf());
+            String encryptedCPF = cpfHasher.hashCPF(userRequest.cpf());
 
             System.out.println(encryptedCPF);
 
@@ -98,7 +101,7 @@ public class UserService {
 
             EnterpriseEntity enterprise = enterpriseRepository.findById(userRequest.enterprise()).orElseThrow(()-> new RuntimeException("Enterprise not found"));
 
-            String encryptedCPF = encryptionUtil.encrypt(userRequest.cpf());
+            String encryptedCPF = cpfHasher.hashCPF(userRequest.cpf());
 
             UserEntity newUser = new UserEntity();
             newUser.setName(userRequest.name());

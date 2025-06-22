@@ -17,6 +17,7 @@ import com.hackaton.desafio.repository.BenefitRepository;
 import com.hackaton.desafio.repository.EnterpriseRepository;
 import com.hackaton.desafio.repository.PartnershipRepository;
 import com.hackaton.desafio.repository.UserRepository;
+import com.hackaton.desafio.util.CPFHasher;
 import com.hackaton.desafio.util.EncryptionUtil;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
@@ -41,14 +42,16 @@ public class AdminService {
     private final PasswordEncoder passwordEncoder;
     private final EncryptionUtil encryptionUtil;
     private final BenefitRepository benefitRepository;
+    private final CPFHasher cpfHasher;
 
-    public AdminService(UserRepository userRepository, EnterpriseRepository enterpriseRepository, PartnershipRepository partnershipRepository, PasswordEncoder passwordEncoder, EncryptionUtil encryptionUtil, BenefitRepository benefitRepository) {
+    public AdminService(UserRepository userRepository, EnterpriseRepository enterpriseRepository, PartnershipRepository partnershipRepository, PasswordEncoder passwordEncoder, EncryptionUtil encryptionUtil, BenefitRepository benefitRepository, CPFHasher cpfHasher) {
         this.userRepository = userRepository;
         this.enterpriseRepository = enterpriseRepository;
         this.partnershipRepository = partnershipRepository;
         this.passwordEncoder = passwordEncoder;
         this.encryptionUtil = encryptionUtil;
         this.benefitRepository = benefitRepository;
+        this.cpfHasher = cpfHasher;
     }
 
     @Transactional
@@ -69,7 +72,7 @@ public class AdminService {
         user.setName(userRequest.name());
         user.setPassword(passwordEncoder.encode(userRequest.password()));
         try {
-            user.setCpf(encryptionUtil.encrypt(userRequest.cpf()));
+            user.setCpf(cpfHasher.hashCPF(userRequest.cpf()));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

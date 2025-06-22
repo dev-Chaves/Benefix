@@ -31,18 +31,20 @@ public class DataInitializer implements CommandLineRunner {
     private final PartnershipRepository partnershipRepository;
     private final PasswordEncoder passwordEncoder;
     private final EncryptionUtil encryptionUtil;
+    private final CPFHasher cpfHasher;
 
     public DataInitializer(EnterpriseRepository enterpriseRepository,
                            UserRepository userRepository,
                            BenefitRepository benefitRepository,
                            PartnershipRepository partnershipRepository,
-                           PasswordEncoder passwordEncoder, EncryptionUtil encryptionUtil) {
+                           PasswordEncoder passwordEncoder, EncryptionUtil encryptionUtil, CPFHasher cpfHasher) {
         this.enterpriseRepository = enterpriseRepository;
         this.userRepository = userRepository;
         this.benefitRepository = benefitRepository;
         this.partnershipRepository = partnershipRepository;
         this.passwordEncoder = passwordEncoder;
         this.encryptionUtil = encryptionUtil;
+        this.cpfHasher = cpfHasher;
     }
 
     @Override
@@ -80,7 +82,7 @@ public class DataInitializer implements CommandLineRunner {
                             String userName = "User " + userCounter;
                             String cpf = generateSequentialCpf(userCounter);
 
-                            String encryptedCPF = encryptionUtil.encrypt(cpf);
+                            String encryptedCPF = cpfHasher.hashCPF(cpf);
 
                             UserEntity user = new UserEntity(userName, defaultPassword, encryptedCPF, enterprise);
                             users.add(user);

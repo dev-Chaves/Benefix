@@ -23,6 +23,9 @@ public class UserEntity implements UserDetails {
     @Column(name = "name", nullable = false)
     private String name;
 
+    @Column(name = "cpf", length = 255, nullable = false, unique = true)
+    private String cpf;
+
     @Column(name = "password", nullable = false)
     private String password;
 
@@ -43,9 +46,10 @@ public class UserEntity implements UserDetails {
     public UserEntity() {
     }
 
-    public UserEntity(String name, String password, EnterpriseEntity enterprise) {
+    public UserEntity(String name, String password, String cpf, EnterpriseEntity enterprise) {
         this.name = name;
         this.password = password;
+        this.cpf = cpf;
         this.enterprise = enterprise;
         this.createdAt = LocalDateTime.now();
         this.role = Role.USER;
@@ -80,6 +84,22 @@ public class UserEntity implements UserDetails {
     @Override
     public String getUsername() {
         return "";
+    }
+
+    public String getCpf() {
+        return cpf;
+    }
+
+    public void setCpf(String cpf) {
+        this.cpf = cpf;
+    }
+
+    public List<DoubtEntity> getDoubts() {
+        return doubts;
+    }
+
+    public void setDoubts(List<DoubtEntity> doubts) {
+        this.doubts = doubts;
     }
 
     @Override

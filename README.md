@@ -70,7 +70,7 @@ Esta API permite:
 
 ### Clonando o Repositório
 ```bash
-git clone <url-do-repositorio>
+git clone https://github.com/dev-Chaves/Benefix
 cd HACKATON-REPO
 ```
 

@@ -11,6 +11,8 @@ import com.hackaton.desafio.repository.EnterpriseRepository;
 import com.hackaton.desafio.repository.PartnershipRepository;
 import com.hackaton.desafio.repository.UserRepository;
 import com.hackaton.desafio.util.AuthUtil;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -24,6 +26,7 @@ import java.util.List;
 import java.util.Objects;
 
 @Service
+@CacheConfig(cacheNames = "benefits")
 public class BenefitService {
 
     private final BenefitRepository benefitRepository;
@@ -40,7 +43,8 @@ public class BenefitService {
         this.partnershipRepository = partnershipRepository;
     }
 
-    public ResponseEntity<?> getBenefitsByEnterprise() {
+    @Cacheable(key = "'enterprise_' + T(com.hackaton.desafio.util.AuthUtil).getAuthenticatedUser().get().getEnterprise().getId()")
+    public List<BenefitResponse> getBenefitsByEnterprise() {
 
         UserEntity user = AuthUtil.getAuthenticatedUser()
                 .orElseThrow(() -> new RuntimeException("User not authenticated"));
@@ -49,14 +53,13 @@ public class BenefitService {
 
         List<BenefitEntity> benefits = benefitRepository.findByEnterpriseId(user.getEnterprise().getId());
 
-        List<BenefitResponse> response = benefits.stream()
+        return benefits.stream()
                 .map(b -> new BenefitResponse(b.getId(), b.getDescription(), b.getSupplierEnterprise().getEnterprise(), b.getCategory()))
                 .toList();
-
-        return ResponseEntity.ok(response);
     }
 
-    public ResponseEntity<?> getBenefitOfPartneship(){
+    @Cacheable(key = "'partnership_' + T(com.hackaton.desafio.util.AuthUtil).getAuthenticatedUser.get().getEnterprise().getId()")
+    public List<BenefitResponse> getBenefitOfPartneship(){
 
         UserEntity user = AuthUtil.getAuthenticatedUser()
                 .orElseThrow(() -> new RuntimeException("User not authenticated"));
@@ -75,14 +78,13 @@ public class BenefitService {
 
          List<BenefitEntity> benefits = benefitRepository.findBySupplierEnterpriseIdIn(partnershipIds);
 
-         List<BenefitResponse> responses = benefits.stream().map( b -> new BenefitResponse(b.getId(),b.getDescription(),b.getSupplierEnterprise().getEnterprise(), b.getCategory())).toList();
-
-         return ResponseEntity.ok(responses);
-
+         return benefits.stream().map( b -> new BenefitResponse(b.getId(),b.getDescription(),b.getSupplierEnterprise().getEnterprise(), b.getCategory())).toList();
 
     }
 
-    public ResponseEntity<List<BenefitResponse>> getBenefitsByCategory(String category) {
+
+    @Cacheable(key = "'category_' + #category + '_enterprise_' + T(com.hackaton.desafio.util.AuthUtil).getAuthenticatedUser().get().getEnterprise().getId()")
+    public List<BenefitResponse> getBenefitsByCategory(String category) {
         try {
 
             BenefitCategory cat = BenefitCategory.valueOf(category.toUpperCase());
@@ -111,7 +113,7 @@ public class BenefitService {
 
             System.out.println("benefits: " + benefits);
 
-            List<BenefitResponse> responses = benefits.stream()
+            return benefits.stream()
                     .map(b -> new BenefitResponse(
                             b.getId(),
                             b.getDescription(),
@@ -119,11 +121,22 @@ public class BenefitService {
                             b.getCategory()
                     )).toList();
 
-            return ResponseEntity.ok(responses);
-
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(List.of());
+            throw new RuntimeException("Invalid Argument" + e);
         }
+    }
+
+
+    public ResponseEntity<List<BenefitResponse>> getBenefitOfPartnershipResponse(){
+        return ResponseEntity.ok(getBenefitOfPartneship());
+    }
+
+    public ResponseEntity<List<BenefitResponse>> getBenefitByEnterpriseResponse(){
+        return ResponseEntity.ok(getBenefitsByEnterprise());
+    }
+
+    public ResponseEntity<List<BenefitResponse>> getBenefitsByCategoryResponse(String category){
+        return ResponseEntity.ok(getBenefitsByCategory(category));
     }
 
 }

@@ -5,6 +5,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 public record RegisterDTO(
         @Schema(description = "Username of Collaborator", example = "João Vitor")
         String name,
+        @Schema(description = "CPF of CPF")
+        String cpf,
         @Schema(description = "Password of Collaborator", example = "123456")
         String password,
         @Schema(description = "Enterprise ID of Collaborator", example = "1")

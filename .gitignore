@@ -33,3 +33,5 @@ build/
 .vscode/
 
 .env
+anot.txt
+cpfs_gerados.csv

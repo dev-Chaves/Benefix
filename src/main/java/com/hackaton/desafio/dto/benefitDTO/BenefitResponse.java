@@ -3,7 +3,9 @@ package com.hackaton.desafio.dto.benefitDTO;
 import com.hackaton.desafio.entity.Enum.BenefitCategory;
 import io.swagger.v3.oas.annotations.media.Schema;
 
-public record BenefitResponse(
+import java.io.Serializable;
+
+public record BenefitResponse (
         @Schema(description = "ID of the Benefit", example = "1")
         Long id,
         @Schema(description = "Name of the Benefit", example = "Desconnt ")
@@ -12,5 +14,6 @@ public record BenefitResponse(
         String nameSupplierEnterprise,
         @Schema(description = "Benefit Category", example = "HEALTH")
         BenefitCategory category
-) {
+) implements Serializable {
+        private static final long serialVersionUID = 1L;
 }

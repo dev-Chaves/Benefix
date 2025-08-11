@@ -1,6 +1,6 @@
 package com.hackaton.desafio.controller;
 
-import com.hackaton.desafio.dto.authDTO.LoginRequest;
+import com.hackaton.desafio.dto.authDTO.LoginRequestV2;
 import com.hackaton.desafio.dto.authDTO.RegisterDTO;
 import com.hackaton.desafio.repository.UserRepository;
 import com.hackaton.desafio.services.UserService;
@@ -35,7 +35,7 @@ public class UserController {
             @ApiResponse(responseCode = "401", description = "Invalid credentials")
     })
     @PostMapping("login")
-    public ResponseEntity<?> login(@Valid @RequestBody LoginRequest user){
+    public ResponseEntity<?> login(@Valid @RequestBody LoginRequestV2 user){
         return userService.login(user);
     }
 

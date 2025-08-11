@@ -29,19 +29,19 @@ public class BenefitController {
     @GetMapping("benefits-by-enterprise")
     @Operation(summary = "Get all benefits by enterprise")
     public ResponseEntity<?> getBenefitsByEnterprise() {
-        return benefitService.getBenefitsByEnterprise();
+        return benefitService.getBenefitByEnterpriseResponse();
     }
 
     @GetMapping("user-benefits")
     @Operation(summary = "Get all benefits by user")
-    public ResponseEntity<?> getBenefitOfPartneship() {
-        return benefitService.getBenefitOfPartneship();
+    public ResponseEntity<List<BenefitResponse>> getBenefitOfPartneship() {
+        return benefitService.getBenefitOfPartnershipResponse();
     }
 
     @GetMapping("/category/{category}")
     @Operation(summary = "Get all benefits by category")
     public ResponseEntity<List<BenefitResponse>> getByCategory(@PathVariable String category) {
-        return benefitService.getBenefitsByCategory(category);
+        return benefitService.getBenefitsByCategoryResponse(category);
     }
 
 }

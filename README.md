@@ -1,4 +1,4 @@
-# Desafio Hackaton API
+# Benefix
 
 API para gerenciamento de benefícios corporativos, parcerias entre empresas e integração com sistema de dúvidas via IA.
 
@@ -70,7 +70,7 @@ Esta API permite:
 
 ### Clonando o Repositório
 ```bash
-git clone <url-do-repositorio>
+git clone https://github.com/dev-Chaves/Benefix
 cd HACKATON-REPO
 ```
 
@@ -103,16 +103,23 @@ mvn clean install
 docker-compose up
 ```
 
-## Banco de Dados
+## 💾 Banco de Dados e Migrações com Flyway
 
-### Migrações com Flyway
+O projeto utiliza o **Flyway** para gerenciar a evolução do schema do banco de dados de forma automática e versionada. Os scripts de migração garantem que o ambiente seja configurado de maneira consistente.
 
-O projeto utiliza Flyway para controle de versão do banco de dados. As migrações estão localizadas em `src/main/resources/db/migration/`:
+**Localização dos Scripts:**
+Todos os scripts SQL de migração estão localizados em:
+`src/main/resources/db/migration/`
 
-- `V1__Create_Initial_Tables.sql`: Criação inicial das tabelas
-- `V2__add_performance_indexes_to_benefit_entity.sql`: Adição de índices de performance
+**Versões da Migração:**
+* **V1:** Criação das tabelas iniciais da aplicação.
+* **V2:** Adição de índices para otimizar a performance das consultas de benefícios.
+* **V3:** Modificação na tabela de usuários para incluir o campo `CPF`.
+* **V4:** Adição de um índice não clusterizado na coluna `CPF` para agilizar as buscas.
 
-As migrações são executadas automaticamente quando a aplicação inicia.
+**Dados Iniciais:**
+Para popular o ambiente de desenvolvimento, uma carga inicial de usuários é realizada a partir do arquivo:
+`src/main/resources/data/users.csv`
 
 ### Queries SQL
 
@@ -125,16 +132,20 @@ Os scripts SQL iniciais podem ser encontrados em:
 - `data.sql`: Dados iniciais para desenvolvimento
 - `src/main/resources/db/migration/`: Scripts de migração
 
-## Infraestrutura
+## 🚀 Infraestrutura e Performance
 
-### Load Balancing com Nginx
+Para garantir a escalabilidade e a velocidade da aplicação, utilizamos as seguintes tecnologias:
 
-A aplicação utiliza Nginx como load balancer, com as seguintes características:
+* **Docker Compose para Orquestração**: Simplifica o deploy e a interconexão de todos os serviços (API, Nginx, Redis, Banco de Dados) em um ambiente conteinerizado.
 
-- Configuração em `src/main/resources/nginx/`
-- Balanceamento entre múltiplas instâncias da aplicação
-- Configuração de proxy reverso
-- Health checks integrados
+* **Load Balancing com Nginx**:
+  * Distribui as requisições entre múltiplas réplicas da API para alta disponibilidade.
+  * Realiza health checks para remover instâncias não saudáveis automaticamente.
+  * Arquivos de configuração localizados em `src/main/resources/nginx/`.
+
+* **Cache com Redis**:
+  * Armazena em memória os resultados de consultas frequentes para reduzir a latência.
+  * A implementação pode ser conferida em `RedisCacheConfig.java`.
 
 ### Escalabilidade
 

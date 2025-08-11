@@ -1,0 +1,1 @@
+CREATE INDEX idx_cpf on tb_user (cpf)
